@@ -6,6 +6,7 @@ from starlette.middleware.trustedhost import TrustedHostMiddleware
 
 from app.config import Settings, settings
 from app.db import make_engine, migrate
+from app.routers.characters import router as characters_router
 
 
 def create_app(config: Settings = settings) -> FastAPI:
@@ -20,6 +21,7 @@ def create_app(config: Settings = settings) -> FastAPI:
     app = FastAPI(title="Variance Studio", version="0.2.0", lifespan=lifespan)
     app.state.engine = engine
     app.state.config = config
+    app.include_router(characters_router)
     app.add_middleware(TrustedHostMiddleware, allowed_hosts=["localhost", "127.0.0.1", "[::1]"])
 
     @app.middleware("http")
@@ -49,6 +51,22 @@ def create_app(config: Settings = settings) -> FastAPI:
         with engine.connect() as db:
             db.exec_driver_sql("SELECT 1")
         return {"status": "ok", "version": "0.2.0", "mode": "local", "publishing_enabled": False}
+
+    @app.get("/api/capabilities")
+    def capabilities():
+        return {
+            "phase": 1,
+            "research": {"available": False, "configured": bool(config.gemini_api_key), "phase": 2},
+            "references": {
+                "available": False,
+                "configured": bool(config.brave_api_key),
+                "phase": 2,
+            },
+            "generation": {"available": False, "phase": 3},
+            "captions": {"available": False, "phase": 4},
+            "publishing": {"available": False, "phase": 5},
+            "metrics": {"available": False, "phase": 6},
+        }
 
     return app
 
