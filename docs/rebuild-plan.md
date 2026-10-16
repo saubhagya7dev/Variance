@@ -35,3 +35,7 @@ Niche style and quality bar; API-based generation versus the earlier ChatGPT-onl
 2. Tested backend/frontend foundation.
 3. Persistent character project feature and tests.
 4. Completed dark workspace, browser QA and transition documentation.
+
+## Current milestone
+
+Phases 0–1 implemented and validated: typed foundation, persistent confirmed identity, editable notes/direction, dark responsive workspace, history and reversible archive. Remaining phases are planned and unavailable in the interface. See validation.md for executed checks.

@@ -1,64 +1,56 @@
-# Variance
+# Variance — personal character studio
 
-A local-first creative operations workspace: sourced opportunity → creative brief → manual ChatGPT image generation → candidate import and human approval → platform packages → manual export and publication record → measured performance and future recommendations.
+A character-first creative workspace with an obsidian and lavender interface. React/TypeScript supplies the responsive studio; FastAPI and SQLite persist character projects locally.
+
+## Working today (phases 0–1)
+
+- Confirm character name, franchise and appearance before creating a project.
+- Save creative direction and personal notes, with revision conflict protection.
+- Reopen projects, search history, archive and restore, and export notes as JSON.
+- Responsive research/reference workspace, connection status and guided empty states.
+- In-tab drafts survive navigation; use **Save direction** for durable storage.
+
+Research, reference importing, image generation, captions, publishing and analytics are planned, clearly marked unavailable. No external provider is called by this release.
 
 ## Run locally
 
-Requires Python 3.12 or later with SQLite. No pip install, Node runtime, paid API, or external account is required to run the app. Tested here on Windows with Python 3.14.3.
+Requires Python 3.12+, uv, and Node.js/npm. In PowerShell, from this repository:
 
 ```powershell
-cd D:\Code\Projects\Variance
-python -m variance.server
+cd frontend
+npm ci
+npm run build
+cd ../backend
+uv sync
+uv run uvicorn app.main:app --host 127.0.0.1 --port 8765
 ```
 
-Open [Variance locally](http://127.0.0.1:8765). Create your own account and workspace with a password of at least 12 characters. There are no default credentials. Session lifetime is 24 hours. Data and image bytes are persisted in `data/variance.sqlite3`; restarting the server preserves everything. Stop with Ctrl+C.
+Open http://127.0.0.1:8765. Build the frontend before starting the backend. Stop with Ctrl+C.
+
+For frontend development, run the backend above and `npm run dev` from `frontend` in a second terminal. Vite uses port 5173 and proxies `/api` to 8765.
+
+## Data and configuration
+
+No API keys are needed for this milestone. Optional configuration is loaded from the repository-root `.env`; see `.env.example` and [account planning](docs/ACCOUNTS.md). Never commit secrets.
+
+The new database defaults to `data/studio.sqlite3`. Existing legacy data remains untouched and is not automatically converted. Back up the database while the server is stopped. Browser QA uses a separate `data/qa-studio.sqlite3`.
+
+This is a single-user loopback application without authentication. Keep the service on 127.0.0.1. Host/origin checks and a custom write header protect the local browser API; they are not a public deployment authentication system.
+
+## Validation
 
 ```powershell
-python -m variance.server --port 9000
-python -m unittest discover -s tests -v
+cd backend
+uv run pytest -q
+uv run ruff check .
+uv run ruff format --check .
+cd ../frontend
+npm run lint
+npm run build
 ```
 
-The server runs one embedded background worker by default. For a separate local worker, run the server with `--no-worker` and run `python -m variance.worker` in another terminal with the same `VARIANCE_DB`. Tasks persist through restarts. See Workflow history to cancel or retry eligible tasks.
+See [validation](docs/validation.md), [architecture](docs/architecture.md), and the [phase plan](docs/rebuild-plan.md).
 
-## First workflow
+## Git workflow
 
-1. Open Settings and set your niche, audience, visual direction and creative guardrails.
-2. Add an opportunity: title, real source URL, relevant excerpt, source publication date and your priority. The research specialist calculates a transparent triage score from supplied evidence.
-3. Open the opportunity, create a creative brief, refine the master prompt, and save changes. The initial creative adapter is a versioned deterministic template.
-4. Copy the prompt to ChatGPT and manually generate images there. ChatGPT remains the exclusive image-generation tool. Import PNG, JPEG or WebP candidates (up to 5 MB each).
-5. Compare candidates and explicitly approve the selected image. Approval is tied to its SHA-256 digest. Rejecting an image revokes its approval and invalidates packages.
-6. Prepare Instagram, Facebook and X packages. Edit captions and replace draft alt text with an accurate image description. Save before downloading the ZIP.
-7. Publish manually on the chosen platform. Record the actual post URL with explicit confirmation. An export is never recorded as a successful publication.
-8. Enter actual platform metrics, reporting period, measurement source and optional comment observations. Review the descriptive analysis. Future briefs incorporate traceable prior reflections as hypotheses.
-
-## What is implemented
-
-- Responsive web workspace with evidence, profiles, editable versioned prompts, candidate comparison, human approvals, queue, analytics, integration status and workflow history.
-- SQLite migrations; workspace-scoped authorization; password hashing; HttpOnly sessions; CSRF and same-origin checks; auth throttling; bounded uploads; CSP and escaped rendering.
-- Persistent specialist jobs with priority, idempotency, transactional claims, leases, bounded retries, cancellation, crash recovery and audit history.
-- Manual ZIP exports containing the approved image, per-platform text, JSON packages, prompt version and source provenance.
-- User-supplied measurements with zero-denominator handling, qualitative comment notes and qualified next-step recommendations.
-
-## Honest integration status
-
-| Capability | Current implementation | Optional future integration |
-|---|---|---|
-| Research | Source links and excerpts supplied by creator; no independent verification | Authorized search or allowlisted feed adapters |
-| Creative direction | Deterministic template, explicitly labelled | Opt-in schema-validated language-model adapter with explicit budget |
-| Image generation | Manual ChatGPT handoff only | No alternative image providers |
-| Distribution | Editable templates, ZIP export, creator-confirmed publication records | Authorized Meta/X adapters with platform approval and scoped credentials |
-| Performance | User-entered platform metrics and comment observations | Authorized analytics ingestion |
-
-No connected publishing, automated live trend discovery, LLM inference, or paid call is claimed. No API credentials are accepted by this version. ChatGPT image availability depends on the creator's ChatGPT access; this app does not provide a free ChatGPT API. The server does not fetch source URLs or send content to third parties.
-
-## Configuration and operation
-
-Set environment variables in your shell; `.env.example` is documentation and is not auto-loaded.
-
-```powershell
-$env:VARIANCE_DB = 'data/variance.sqlite3'
-$env:VARIANCE_REGISTRATION = '0' # After initial account provisioning
-python -m variance.server
-```
-
-Keep loopback binding for personal local use. See [architecture and agent orchestration](docs/architecture.md), [deployment and backups](docs/deployment.md), and [validation record](docs/validation.md). This is a tested initial vertical slice, not an audited internet-facing production service. Team invitations, roles, account recovery, full media decoding, scheduled direct publishing, provider integrations and multi-host operations remain future work.
+Work is committed per feature on `codex/variance-rebuild`. No automatic pushes. The former application remains recoverable through Git history; its superseded source is removed from this branch.
