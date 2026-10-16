@@ -1,10 +1,11 @@
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Request
-from fastapi.responses import JSONResponse
+from fastapi.responses import FileResponse, JSONResponse
+from fastapi.staticfiles import StaticFiles
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 
-from app.config import Settings, settings
+from app.config import ROOT, Settings, settings
 from app.db import make_engine, migrate
 from app.routers.characters import router as characters_router
 
@@ -67,6 +68,14 @@ def create_app(config: Settings = settings) -> FastAPI:
             "publishing": {"available": False, "phase": 5},
             "metrics": {"available": False, "phase": 6},
         }
+
+    frontend = ROOT / "frontend" / "dist"
+    if (frontend / "assets").exists():
+        app.mount("/assets", StaticFiles(directory=frontend / "assets"), name="assets")
+
+        @app.get("/", include_in_schema=False)
+        def index():
+            return FileResponse(frontend / "index.html")
 
     return app
 
