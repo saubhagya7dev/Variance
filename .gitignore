@@ -4,3 +4,12 @@ __pycache__/
 data/
 .env
 test-results/
+node_modules/
+dist/
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+.uv-cache/
+.env.*
+!.env.example
+*.tsbuildinfo
