@@ -4,4 +4,4 @@ Follow README.md for installation and launch. Build the frontend before starting
 
 No hosted deployment is configured. The local application has no authentication and must remain bound to loopback. Public hosting requires a separate authentication, TLS, credentials and access-control design.
 
-Before backup, stop the backend cleanly, then copy data/studio.sqlite3. Keep the old data directory intact during transition. Do not overwrite the new database with a legacy schema. No automated legacy migration is supplied.
+Before backup, stop the backend cleanly, then copy data/studio.sqlite3 and data/references (or your configured ASSET_DIR). Keep the old data directory intact during transition. Do not overwrite the new database with a legacy schema. No automated legacy migration is supplied.
