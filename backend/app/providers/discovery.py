@@ -7,7 +7,7 @@ import httpx
 
 from app.discovery_models import Citation, ReferenceCandidate, ResearchBrief, Source
 
-USER_AGENT = "VarianceLocalStudio/0.3 (personal character reference research)"
+USER_AGENT = "Variance/0.3 (https://github.com/saubhagya7dev/Variance; personal research)"
 
 
 def public_link(value: str) -> str:
@@ -46,17 +46,34 @@ async def wikipedia_research(identity: dict[str, str]) -> ResearchBrief:
     body = await wiki_request(
         "en.wikipedia.org",
         {
-            "generator": "search",
-            "gsrsearch": query,
-            "gsrnamespace": 0,
-            "gsrlimit": 3,
-            "prop": "extracts|info",
+            "titles": identity["name"],
+            "redirects": 1,
+            "prop": "extracts|info|pageprops",
             "exintro": 1,
             "explaintext": 1,
             "exchars": 2400,
             "inprop": "url",
         },
     )
+    exact_pages = body.get("query", {}).get("pages", [])
+    exact_match = any(
+        p.get("extract") and "disambiguation" not in p.get("pageprops", {}) for p in exact_pages
+    )
+    if not exact_match:
+        body = await wiki_request(
+            "en.wikipedia.org",
+            {
+                "generator": "search",
+                "gsrsearch": query,
+                "gsrnamespace": 0,
+                "gsrlimit": 3,
+                "prop": "extracts|info",
+                "exintro": 1,
+                "explaintext": 1,
+                "exchars": 2400,
+                "inprop": "url",
+            },
+        )
     sources, citations, paragraphs = [], [], []
     pages = sorted(body.get("query", {}).get("pages", []), key=lambda p: p.get("index", 0))
     for page in pages:
