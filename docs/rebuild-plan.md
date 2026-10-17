@@ -1,10 +1,10 @@
 # Character-first rebuild
 
-Approved scope: implement Phase 0 (foundation) and Phase 1 (dark workspace and persistent character projects), then review before connecting providers. Commit milestones locally. Never push unless separately requested. The user's sketch defines information hierarchy, not literal styling.
+Approved scope: phases 0�1 are complete; phase 2 is now approved with free providers by default. Commit milestones locally. Never push unless separately requested. The user's sketch defines information hierarchy, not literal styling.
 
 ## Product
 
-A single-user local studio: fictional character → identity confirmation → grounded research and selected references → niche-style prompt and generation batches → image approval → captions and post approval → publishing → measurements. No SaaS accounts or billing. Dark charcoal surfaces, restrained violet accents, readable type, image-first panels, keyboard and mobile accessibility. Empty states must be honest; no fabricated research, images, provider activity or metrics.
+A single-user local studio: fictional character → identity confirmation → grounded research and selected references → niche-style prompt and generation batches → image approval → captions and post approval → publishing → measurements. No SaaS accounts or billing. Warm brown surfaces, restrained amber accents, readable type, image-first panels, keyboard and mobile accessibility. Empty states must be honest; no fabricated research, images, provider activity or metrics.
 
 ## Phases
 
@@ -38,4 +38,8 @@ Niche style and quality bar; API-based generation versus the earlier ChatGPT-onl
 
 ## Current milestone
 
-Phases 0–1 implemented and validated: typed foundation, persistent confirmed identity, editable notes/direction, dark responsive workspace, history and reversible archive. Remaining phases are planned and unavailable in the interface. See validation.md for executed checks.
+Phases 0–1 implemented and validated: typed foundation, persistent confirmed identity, editable notes/direction, dark responsive workspace, history and reversible archive. Phases 3�7 remain planned and unavailable in the interface. See validation.md for executed checks.
+
+## Phase 2 delivered
+
+Free Wikipedia extracts and Commons reference discovery are implemented with persistent research/source evidence, local uploads, validated imports, deduplication, selection and removal. Optional Gemini grounded research is available after explicit configuration; live Gemini verification remains pending a user key. The interface retains the warm brown theme. File-scoped commits and feature checkpoints replace the earlier milestone-only commit policy.
