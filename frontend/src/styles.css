@@ -1,5 +1,53 @@
 @layer reset, base, layout, components, responsive;
 
+@layer components {
+  .discovery-layout { align-items: start; }
+  .discovery-actions { padding: 18px; display: flex; align-items: center; gap: 16px; border-bottom: 1px solid #403025; }
+  .discovery-actions strong { font-size: 12px; color: #e3c9ac; }
+  .discovery-actions p { font-size: 11px; margin: 5px 0 0; }
+  .discovery-actions button { flex-shrink: 0; }
+  .discovery-message { margin: 14px 18px; font-size: 12px; overflow-wrap: anywhere; }
+  .discovery-message button { margin-left: 12px; }
+  .snapshot-picker { margin: 16px 18px; font-size: 11px; }
+  .snapshot-picker select { display: block; margin-top: 7px; padding: 8px; width: 100%; color: #dec7af; background: #22190f; border: 1px solid #62442e; border-radius: 5px; }
+  .research-results { padding: 22px; max-height: 620px; overflow-y: auto; }
+  .research-prose { white-space: pre-wrap; font-size: 13px; color: #d3c4b2; margin-top: 18px; overflow-wrap: anywhere; }
+  .evidence { padding: 14px 0; border-top: 1px solid #463225; }
+  .evidence p { white-space: pre-wrap; font-size: 12px; color: #c1b09b; overflow-wrap: anywhere; }
+  .evidence span { display: flex; flex-wrap: wrap; gap: 8px; }
+  .evidence a, .reference-card a { color: #e0b17a; font-size: 11px; overflow-wrap: anywhere; }
+  .source-link { display: flex; gap: 12px; align-items: center; color: #e0b17a; text-decoration: none; padding: 16px 0; border-bottom: 1px solid #463225; }
+  .source-link div { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+  .source-link small { display: block; color: #b0a08f; margin-top: 5px; }
+  .source-link:hover strong { text-decoration: underline; }
+  .search-suggestions { border: 0; width: 100%; min-height: 120px; background: #fff; }
+  .reference-search-form { display: flex; align-items: center; gap: 8px; padding: 16px 16px 0; }
+  .reference-search-form input { min-width: 0; margin: 0; }
+  .reference-explainer { font-size: 11px; padding: 0 18px; margin: 12px 0; }
+  .reference-view-tabs { display: flex; padding: 8px 15px; border-block: 1px solid #403025; gap: 8px; }
+  .reference-view-tabs button { padding: 7px; font-size: 11px; }
+  .reference-view-tabs button.active { color: #efc58b; background: #463124; }
+  .reference-cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; padding: 16px; max-height: 680px; overflow-y: auto; }
+  .reference-cards:empty { display: none; }
+  .reference-card { min-width: 0; border: 1px solid #4c3626; background: #1c1611; border-radius: 8px; overflow: hidden; }
+  .reference-card.selected { border-color: #dfb17a; box-shadow: 0 0 0 1px #dfb17a44; }
+  .reference-card>img { width: 100%; height: 160px; object-fit: contain; display: block; background: #100d0a; }
+  .reference-card>div:not(.image-fallback) { padding: 12px; }
+  .reference-card h3 { font-size: 12px; margin-bottom: 8px; overflow-wrap: anywhere; }
+  .reference-card p { font-size: 10px; margin-bottom: 7px; overflow-wrap: anywhere; }
+  .reference-card a { display: block; margin-bottom: 10px; }
+  .reference-card-actions { display: flex; align-items: center; justify-content: space-between; padding-top: 5px; }
+  .image-fallback { height: 160px; display: flex; flex-direction: column; gap: 10px; align-items: center; justify-content: center; color: #bb9e7e; font-size: 11px; }
+  .live-selection { grid-column: 1 / -1; margin-top: 0; flex-wrap: wrap; }
+  .selected-thumbnails { display: flex; gap: 9px; flex-wrap: wrap; flex: 1; }
+  .selected-thumbnails button { position: relative; width: 48px; height: 58px; padding: 0; overflow: hidden; border: 1px solid #b68a59; }
+  .selected-thumbnails img { width: 100%; height: 100%; object-fit: cover; }
+  .selected-thumbnails svg { position: absolute; right: 0; top: 0; background: #24170ddd; }
+  .visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
+  .spinning { animation: spin 1.2s linear infinite; }
+  @media(max-width:650px) { .discovery-actions { flex-wrap: wrap; }.reference-cards { gap: 9px; padding: 12px; }.reference-card>img { height: 130px; }.discovery-layout .research-tabs { gap: 12px; }.research-results { padding: 17px; } }
+}
+
 @layer reset {
   * { box-sizing: border-box; }
   body { margin: 0; }
