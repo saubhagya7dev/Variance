@@ -215,3 +215,35 @@ def test_normalization_removes_metadata_and_limits_dimensions():
     clean, width, _ = image_store.normalize_image(out.getvalue())
     assert width == 4096
     assert "private" not in Image.open(BytesIO(clean)).info
+
+
+async def test_wikipedia_prefers_exact_title_and_falls_back_for_missing_page(monkeypatch):
+    calls = []
+
+    async def wiki(host, params):
+        calls.append(params)
+        if params.get("titles") == "Missing":
+            return {"query": {"pages": [{"missing": True}]}}
+        return {
+            "query": {
+                "pages": [
+                    {
+                        "title": "Hero",
+                        "extract": "A sourced character.",
+                        "fullurl": "https://en.wikipedia.org/wiki/Hero",
+                    }
+                ]
+            }
+        }
+
+    monkeypatch.setattr(providers, "wiki_request", wiki)
+    result = await providers.wikipedia_research(
+        {"name": "Hero", "franchise": "Story", "variant": "Original"}
+    )
+    assert len(calls) == 1 and calls[0]["titles"] == "Hero"
+    assert result.sources[0].title == "Hero"
+    calls.clear()
+    await providers.wikipedia_research(
+        {"name": "Missing", "franchise": "Story", "variant": "Original"}
+    )
+    assert calls[1]["generator"] == "search"
