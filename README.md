@@ -1,6 +1,6 @@
 # Variance — personal character studio
 
-A character-first creative workspace with an obsidian and lavender interface. React/TypeScript supplies the responsive studio; FastAPI and SQLite persist character projects locally.
+A character-first creative workspace with an warm espresso, amber light and subtle grain interface. React/TypeScript supplies the responsive studio; FastAPI and SQLite persist character projects locally.
 
 ## Working today (phases 0–1)
 
@@ -53,4 +53,4 @@ See [validation](docs/validation.md), [architecture](docs/architecture.md), and 
 
 ## Git workflow
 
-Work is committed per feature on `codex/variance-rebuild`. No automatic pushes. The former application remains recoverable through Git history; its superseded source is removed from this branch.
+Work is committed per feature directly on `main`. No automatic pushes. The former application remains recoverable through Git history; its superseded source is removed from this branch.
