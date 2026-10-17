@@ -20,7 +20,14 @@ def public_addresses(host: str) -> list[str]:
     addresses = list(
         dict.fromkeys(row[4][0] for row in socket.getaddrinfo(host, 443, type=socket.SOCK_STREAM))
     )
-    if not addresses or any(not ipaddress.ip_address(ip).is_global for ip in addresses):
+    if not addresses or any(
+        not ipaddress.ip_address(ip).is_global
+        or (
+            isinstance(ipaddress.ip_address(ip), ipaddress.IPv6Address)
+            and (ipaddress.ip_address(ip).sixtofour or ipaddress.ip_address(ip).teredo)
+        )
+        for ip in addresses
+    ):
         raise ValueError("Only public internet image addresses are allowed.")
     return addresses
 
@@ -65,7 +72,7 @@ def download_image(url: str) -> bytes:
                 "GET",
                 target,
                 headers={
-                    "User-Agent": "VarianceLocalStudio/0.3",
+                    "User-Agent": "Variance/0.3 (https://github.com/saubhagya7dev/Variance; reference import)",
                     "Accept": "image/*",
                     "Accept-Encoding": "identity",
                 },
