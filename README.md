@@ -10,7 +10,7 @@ A character-first creative workspace with an warm espresso, amber light and subt
 - Responsive research/reference workspace, connection status and guided empty states.
 - In-tab drafts survive navigation; use **Save direction** for durable storage.
 
-Research, reference importing, image generation, captions, publishing and analytics are planned, clearly marked unavailable. No external provider is called by this release.
+Research and reference importing are available through free providers; optional Gemini needs explicit configuration. Image generation, captions, publishing and analytics remain planned.
 
 ## Run locally
 
@@ -31,7 +31,7 @@ For frontend development, run the backend above and `npm run dev` from `frontend
 
 ## Data and configuration
 
-No API keys are needed for this milestone. Optional configuration is loaded from the repository-root `.env`; see `.env.example` and [account planning](docs/ACCOUNTS.md). Never commit secrets.
+No API keys are needed for the default free discovery workflow. Optional configuration is loaded from the repository-root `.env`; see `.env.example` and [account planning](docs/ACCOUNTS.md). Never commit secrets.
 
 The new database defaults to `data/studio.sqlite3`. Existing legacy data remains untouched and is not automatically converted. Back up the database while the server is stopped. Browser QA uses a separate `data/qa-studio.sqlite3`.
 
@@ -54,3 +54,15 @@ See [validation](docs/validation.md), [architecture](docs/architecture.md), and 
 ## Git workflow
 
 Work is committed per feature directly on `main`. No automatic pushes. The former application remains recoverable through Git history; its superseded source is removed from this branch.
+
+## Phase 2 — research and references
+
+The default workflow now runs free Wikipedia source discovery and Wikimedia Commons image search, with no keys. Create a character project, click **Start research**, inspect **Sources**, search Commons or upload a PNG/JPEG/WebP, then import and select references. Research snapshots and selected images survive restarts. Free extracts are labelled as source material; visual traits are not invented. Commons may have sparse coverage or show adaptations/cosplay.
+
+Optional Gemini grounded research is implemented but needs your key and account-quota review; see docs/ACCOUNTS.md. It is disabled by default and was tested with response fixtures, not a live key. No paid fallback exists.
+
+Reference uploads/downloads: 8 MB maximum, 20 megapixels maximum, static raster formats only. Images are re-encoded to PNG (maximum 4096px per side), metadata removed, and duplicates combined. Up to 64 active references per project. Download redirects and DNS addresses are checked; TLS connects to a pinned public address. Removed references can be restored by importing the same image again. Stored image files are retained, so removal does not reclaim disk space.
+
+Back up both `data/studio.sqlite3` and `data/references` while the backend is stopped. Custom ASSET_DIR is supported. Run one backend process; discovery operations are serialized per project within that process. These requests finish in the foreground, not as durable background jobs. The UI lists the latest ten saved research snapshots; older snapshots remain in the database.
+
+File changes are committed one file at a time on main, followed by empty feature-completion checkpoint commits. No push is performed.
