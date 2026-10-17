@@ -68,6 +68,7 @@ def test_nonexistent_and_untrusted_writes(client):
 
 def test_capabilities_do_not_claim_live_integrations(client):
     data = client.get("/api/capabilities").json()
-    assert not data["research"]["available"]
+    assert data["research"]["available"]
+    assert data["research"]["provider"] == "wikipedia"
     assert not data["publishing"]["available"]
     assert "api_key" not in str(data)
