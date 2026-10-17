@@ -1,3 +1,4 @@
+import asyncio
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Request
@@ -8,6 +9,7 @@ from starlette.middleware.trustedhost import TrustedHostMiddleware
 from app.config import ROOT, Settings, settings
 from app.db import make_engine, migrate
 from app.routers.characters import router as characters_router
+from app.routers.discovery import router as discovery_router
 
 
 def create_app(config: Settings = settings) -> FastAPI:
@@ -22,7 +24,10 @@ def create_app(config: Settings = settings) -> FastAPI:
     app = FastAPI(title="Variance Studio", version="0.2.0", lifespan=lifespan)
     app.state.engine = engine
     app.state.config = config
+    app.state.discovery_busy = set()
+    app.state.image_slots = asyncio.Semaphore(4)
     app.include_router(characters_router)
+    app.include_router(discovery_router)
     app.add_middleware(TrustedHostMiddleware, allowed_hosts=["localhost", "127.0.0.1", "[::1]"])
 
     @app.middleware("http")
@@ -56,11 +61,18 @@ def create_app(config: Settings = settings) -> FastAPI:
     @app.get("/api/capabilities")
     def capabilities():
         return {
-            "phase": 1,
-            "research": {"available": False, "configured": bool(config.gemini_api_key), "phase": 2},
+            "phase": 2,
+            "research": {
+                "available": config.research_provider == "wikipedia" or bool(config.gemini_api_key),
+                "configured": config.research_provider == "wikipedia"
+                or bool(config.gemini_api_key),
+                "provider": config.research_provider,
+                "phase": 2,
+            },
             "references": {
-                "available": False,
-                "configured": bool(config.brave_api_key),
+                "available": True,
+                "configured": True,
+                "provider": "wikimedia",
                 "phase": 2,
             },
             "generation": {"available": False, "phase": 3},
