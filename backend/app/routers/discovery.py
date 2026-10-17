@@ -1,4 +1,5 @@
 import asyncio
+import http.client
 from contextlib import asynccontextmanager
 
 import httpx
@@ -54,7 +55,7 @@ async def operation(request: Request, project_id: str):
             else "Provider request failed. Check configuration and try again."
         )
         raise HTTPException(502, message) from exc
-    except (httpx.HTTPError, OSError, TimeoutError) as exc:
+    except (httpx.HTTPError, http.client.HTTPException, OSError, TimeoutError) as exc:
         raise HTTPException(
             502, "The source could not be reached. Your saved work is unchanged; try again."
         ) from exc
@@ -179,7 +180,7 @@ async def thumbnail(project_id: str, candidate_id: str, request: Request):
             raw = await asyncio.to_thread(download_image, url)
             content, _, _ = await asyncio.to_thread(normalize_image, raw)
         return Response(content, media_type="image/png")
-    except (ValueError, OSError, TimeoutError) as exc:
+    except (ValueError, http.client.HTTPException, OSError, TimeoutError) as exc:
         raise HTTPException(502, "Preview unavailable. Open the source page instead.") from exc
 
 
