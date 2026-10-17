@@ -4,10 +4,10 @@ export interface CharacterProject {
   created_at: string; updated_at: string;
 }
 export interface Identity { name: string; franchise: string; variant: string; fictional_confirmed: true }
-export interface Capability { available: boolean; configured?: boolean; phase: number }
+export interface Capability { available: boolean; configured?: boolean; phase: number; provider?: string }
 export type Capabilities = Record<'research' | 'references' | 'generation' | 'captions' | 'publishing' | 'metrics', Capability>
 
-async function request<T>(path: string, method = 'GET', data?: unknown): Promise<T> {
+export async function request<T>(path: string, method = 'GET', data?: unknown): Promise<T> {
   const response = await fetch('/api' + path, { method,
     headers: { 'Content-Type': 'application/json', 'X-Variance-Client': 'studio' },
     body: data === undefined ? undefined : JSON.stringify(data),
