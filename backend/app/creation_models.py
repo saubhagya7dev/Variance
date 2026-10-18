@@ -56,6 +56,7 @@ class PromptVersion(SQLModel, table=True):
 class BatchCreate(BaseModel):
     model_config = ConfigDict(extra="forbid")
     prompt_id: str
+    mode: Literal["manual", "api"] = "manual"
     target_count: int = InputField(default=4, ge=1, le=4)
     request_key: str = InputField(pattern=r"^[a-f0-9-]{32,36}$")
 
@@ -67,6 +68,7 @@ class CreationBatch(SQLModel, table=True):
     prompt_id: str = Field(foreign_key="prompt_versions.id")
     mode: str = "manual"
     status: str = "awaiting_import"
+    error: str = ""
     target_count: int = 4
     request_key: str
     created_at: str = Field(default_factory=timestamp)
