@@ -9,6 +9,7 @@ from starlette.middleware.trustedhost import TrustedHostMiddleware
 from app.config import ROOT, Settings, settings
 from app.db import make_engine, migrate
 from app.routers.characters import router as characters_router
+from app.routers.creation import router as creation_router
 from app.routers.discovery import router as discovery_router
 
 
@@ -28,6 +29,7 @@ def create_app(config: Settings = settings) -> FastAPI:
     app.state.image_slots = asyncio.Semaphore(4)
     app.include_router(characters_router)
     app.include_router(discovery_router)
+    app.include_router(creation_router)
     app.add_middleware(TrustedHostMiddleware, allowed_hosts=["localhost", "127.0.0.1", "[::1]"])
 
     @app.middleware("http")
@@ -61,7 +63,7 @@ def create_app(config: Settings = settings) -> FastAPI:
     @app.get("/api/capabilities")
     def capabilities():
         return {
-            "phase": 2,
+            "phase": 3,
             "research": {
                 "available": config.research_provider == "wikipedia" or bool(config.gemini_api_key),
                 "configured": config.research_provider == "wikipedia"
@@ -75,7 +77,12 @@ def create_app(config: Settings = settings) -> FastAPI:
                 "provider": "wikimedia",
                 "phase": 2,
             },
-            "generation": {"available": False, "phase": 3},
+            "generation": {
+                "available": False,
+                "phase": 3,
+                "provider": "manual",
+                "manual_workflow": True,
+            },
             "captions": {"available": False, "phase": 4},
             "publishing": {"available": False, "phase": 5},
             "metrics": {"available": False, "phase": 6},
