@@ -1,5 +1,5 @@
 import asyncio
-from contextlib import asynccontextmanager
+from contextlib import asynccontextmanager, suppress
 
 from fastapi import FastAPI, Request
 from fastapi.responses import FileResponse, JSONResponse
@@ -8,6 +8,7 @@ from starlette.middleware.trustedhost import TrustedHostMiddleware
 
 from app.config import ROOT, Settings, settings
 from app.db import make_engine, migrate
+from app.generation import recover, worker
 from app.routers.characters import router as characters_router
 from app.routers.creation import router as creation_router
 from app.routers.discovery import router as discovery_router
@@ -19,8 +20,15 @@ def create_app(config: Settings = settings) -> FastAPI:
     @asynccontextmanager
     async def lifespan(app: FastAPI):
         migrate(engine)
-        yield
-        engine.dispose()
+        recover(engine)
+        task = asyncio.create_task(worker(app.state))
+        try:
+            yield
+        finally:
+            task.cancel()
+            with suppress(asyncio.CancelledError):
+                await task
+            engine.dispose()
 
     app = FastAPI(title="Variance Studio", version="0.2.0", lifespan=lifespan)
     app.state.engine = engine
@@ -78,9 +86,10 @@ def create_app(config: Settings = settings) -> FastAPI:
                 "phase": 2,
             },
             "generation": {
-                "available": False,
+                "available": config.generation_ready,
                 "phase": 3,
-                "provider": "manual",
+                "provider": "cloudflare",
+                "configured": config.generation_ready,
                 "manual_workflow": True,
             },
             "captions": {"available": False, "phase": 4},
