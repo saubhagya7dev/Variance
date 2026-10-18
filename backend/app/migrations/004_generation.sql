@@ -1,0 +1,1 @@
+ALTER TABLE creation_batches ADD COLUMN error TEXT NOT NULL DEFAULT '';
