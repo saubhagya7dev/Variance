@@ -19,6 +19,17 @@ class Settings(BaseSettings):
     research_provider: Literal["wikipedia", "gemini"] = "wikipedia"
     gemini_model: str = Field(default="gemini-2.5-flash", pattern=r"^[a-zA-Z0-9.-]+$")
     asset_dir: Path = ROOT / "data" / "references"
+    cloudflare_account_id: str = Field(default="", pattern=r"^([a-fA-F0-9]{32})?$")
+    cloudflare_api_token: str = ""
+    cloudflare_free_plan_confirmed: bool = False
+
+    @property
+    def generation_ready(self) -> bool:
+        return bool(
+            self.cloudflare_account_id
+            and self.cloudflare_api_token
+            and self.cloudflare_free_plan_confirmed
+        )
 
 
 settings = Settings()
