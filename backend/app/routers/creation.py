@@ -151,16 +151,33 @@ def create_batch(project_id: str, payload: BatchCreate, request: Request):
             select(CreationBatch).where(CreationBatch.request_key == payload.request_key)
         ).first()
         if existing:
-            if (existing.project_id, existing.prompt_id, existing.target_count) != (
+            if (existing.project_id, existing.prompt_id, existing.target_count, existing.mode) != (
                 project_id,
                 payload.prompt_id,
                 payload.target_count,
+                payload.mode,
             ):
                 raise HTTPException(
                     409, "This batch request key was already used for different settings."
                 )
             return existing
-        row = CreationBatch(project_id=project_id, **payload.model_dump())
+        if payload.mode == "api":
+            if not request.app.state.config.generation_ready:
+                raise HTTPException(
+                    409,
+                    "Configure Cloudflare Free plan credentials first. Manual generation is available now.",
+                )
+            prompt = prompt_for(db, project_id, payload.prompt_id)
+            if len(json.loads(prompt.context_json)["references"]) > 4:
+                raise HTTPException(
+                    409,
+                    "API generation supports up to four references. Save a new prompt with fewer references or use manual mode.",
+                )
+        row = CreationBatch(
+            project_id=project_id,
+            **payload.model_dump(),
+            status="queued" if payload.mode == "api" else "awaiting_import",
+        )
         db.add(row)
         db.commit()
         db.refresh(row)
@@ -169,6 +186,8 @@ def create_batch(project_id: str, payload: BatchCreate, request: Request):
 
 def refresh_batch(db: Session, batch: CreationBatch):
     artworks = db.exec(select(Artwork).where(Artwork.batch_id == batch.id)).all()
+    if batch.mode == "api" and len(artworks) < batch.target_count:
+        return
     batch.status = (
         "awaiting_import"
         if len(artworks) < batch.target_count
@@ -180,9 +199,9 @@ def refresh_batch(db: Session, batch: CreationBatch):
     db.add(batch)
 
 
-def store_artwork(request: Request, project_id: str, batch_id: str, raw: bytes, title: str):
-    digest, width, height = store_image(request.app.state.config.asset_dir / "artwork", raw)
-    with Session(request.app.state.engine) as db:
+def store_artwork(state, project_id: str, batch_id: str, raw: bytes, title: str):
+    digest, width, height = store_image(state.config.asset_dir / "artwork", raw)
+    with Session(state.engine) as db:
         db.connection().exec_driver_sql("BEGIN IMMEDIATE")
         project_check(db, project_id, write=True)
         batch = batch_for(db, project_id, batch_id)
@@ -224,7 +243,9 @@ async def import_artwork(
     async with operation(request, project_id):
         with Session(request.app.state.engine) as db:
             project_check(db, project_id, write=True)
-            batch_for(db, project_id, batch_id)
+            batch = batch_for(db, project_id, batch_id)
+            if batch.mode != "manual":
+                raise HTTPException(409, "Import results into a manual batch.")
         raw = bytearray()
         async for chunk in request.stream():
             raw.extend(chunk)
@@ -232,7 +253,7 @@ async def import_artwork(
                 raise HTTPException(413, "Upload exceeds 8 MB.")
         async with request.app.state.image_slots:
             return await asyncio.to_thread(
-                store_artwork, request, project_id, batch_id, bytes(raw), title
+                store_artwork, request.app.state, project_id, batch_id, bytes(raw), title
             )
 
 
