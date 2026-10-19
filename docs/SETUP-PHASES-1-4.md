@@ -1,3 +1,5 @@
+> **Provider update:** Cloudflare image generation is retired. Use the Gemini daily-limited tool through manual export/import. Gemini image API access is separate, paid-only and disabled by default. See [current configuration](../README.md#configuration). Earlier Cloudflare validation below describes the historical implementation.
+
 # Variance: complete Phase 1–4 setup and workflow
 
 Updated October 20, 2026. Local, single-user Windows workspace. Work is on `main`; each changed file receives its own commit plus feature checkpoint commits. Nothing is pushed automatically.
@@ -8,7 +10,7 @@ Updated October 20, 2026. Local, single-user Windows workspace. Work is on `main
 | --- | --- | --- |
 | 1 — Workspace | Warm brown/amber dark interface; confirmed fictional-character identity, franchise/version, project notes, direction, history, archive/restore, local persistence | None |
 | 2 — Research and references | Wikipedia extracts with source links; Wikimedia Commons search/import; local reference uploads; selected references; persistent research snapshots; optional grounded Gemini research | None for Wikipedia/Commons; optional Gemini key |
-| 3 — Creative direction and artwork | Per-project styles, medium, mood, palette, composition, identity constraints; editable/versioned prompts and frozen context; reference ZIPs; manual result imports; optional Cloudflare generation queue; comparison, approvals/rejections, review notes | None for manual import/export; Cloudflare credentials for API generation |
+| 3 — Creative direction and artwork | Per-project styles, medium, mood, palette, composition, identity constraints; editable/versioned prompts and frozen context; reference ZIPs; manual result imports; optional disabled-by-default Gemini API queue; comparison, approvals/rejections, review notes | None for manual import/export; paid Gemini access for API generation |
 | 4 — Captions and manual posting | Instagram/Facebook caption drafts, tones, hashtags, alt text, editable disclosure, source evidence, immutable post versions, approximate previews, post approval, ZIP export, clipboard copy, self-reported manual publication history | None for local templates; optional Gemini drafting |
 
 The complete keyless route is research → references → prompt pack → generate using your own external tool → import and approve artwork → local caption draft → edit and approve → export → manually publish → record URL. External image tools have their own account requirements and pricing. Variance does not generate images locally.
@@ -48,7 +50,7 @@ No `.env` file is needed for the keyless route. If you want configuration, copy 
 ```dotenv
 RESEARCH_PROVIDER=wikipedia
 GEMINI_CAPTIONS_ENABLED=false
-CLOUDFLARE_FREE_PLAN_CONFIRMED=false
+GEMINI_IMAGE_PAID_ENABLED=false
 PUBLISH_ENABLED=false
 ```
 
@@ -67,19 +69,13 @@ GEMINI_CAPTIONS_ENABLED=true
 
 You may leave `RESEARCH_PROVIDER=wikipedia` and enable only Gemini captions. The caption method selector is available after a key and the caption flag are configured. This sends identity, creative style and saved research to Google; it does not send artwork. Research sends character identity and uses Google Search grounding. Caption drafting uses frozen research context without a new search. Neither generated nor manually edited claims are automatically fact-checked. Local templates use only identity and creative direction, and are labelled as templates rather than AI generation.
 
-## Optional API image generation
+## Gemini image generation: tool versus API
 
-Use a Cloudflare account on **Workers Free** and an API token permitted to access Workers AI. Add:
+Use **Manual generation** and **Open Gemini** to generate with your own account's daily allowance. Download the prompt/reference pack, attach references and paste the prompt in Gemini, then import the result. Variance does not automate the Gemini website or inspect its quota.
 
-```dotenv
-CLOUDFLARE_ACCOUNT_ID=your_32_character_account_id
-CLOUDFLARE_API_TOKEN=your_local_token
-CLOUDFLARE_FREE_PLAN_CONFIRMED=true
-```
+The optional Gemini API adapter has no published free image tier. Keep `GEMINI_IMAGE_PAID_ENABLED=false`. A research/caption key alone cannot enable image calls. Future paid opt-in requires `GEMINI_API_KEY`, explicit `GEMINI_IMAGE_PAID_ENABLED=true`, and access to the configured `GEMINI_IMAGE_MODEL` (default `gemini-nano-banana-2.1`). No live paid calls were made during implementation.
 
-Set the flag only after checking the account plan. Workers Paid can charge overages; the app cannot verify the plan. No paid fallback or plan upgrade is performed by Variance. Check current allocation in [Cloudflare pricing](https://developers.cloudflare.com/workers-ai/platform/pricing/).
-
-The adapter uses FLUX.2 klein 4B. It sends the saved prompt plus up to four reference images. Inputs are resized below 512px per side; output dimensions follow the selected ratio. Keep at most four references for API mode; manual prompt packs allow up to eight. Keep the backend running while batches execute. Queued jobs survive restart; interrupted in-flight calls are not resent automatically. Partial results remain available. Start a new batch explicitly after inspecting a failure.
+The old Cloudflare credentials are ignored. Existing results are preserved; legacy queued jobs are interrupted rather than rerouted. New API batches snapshot Gemini's provider/model. The adapter supports four references, 1K output and selected aspect ratios, with no automatic retries.
 
 ## Phase-by-phase use
 
@@ -103,7 +99,7 @@ The adapter uses FLUX.2 klein 4B. It sends the saved prompt plus up to four refe
 3. **Assemble prompt**, edit it, and **Save new version**. A saved version freezes selected references and the then-current research. Changing controls requires reassembly. Unsaved prompt changes are lost on leaving the editor.
 4. Open **Image studio**, select a saved prompt and 1–4 variations.
 5. **Manual:** create a batch, download its pack, generate externally and import each image into that batch. Exporting does not generate images.
-6. **API:** choose API generation once Cloudflare is configured, then follow batch status.
+6. **API:** choose API generation only after deliberately enabling paid Gemini access, then follow batch status.
 7. Compare images, inspect full-size results, add review notes and approve usable artwork. Reject or reset others.
 
 ### Phase 4: captions, approval and manual posting
@@ -154,6 +150,6 @@ npm.cmd run build
 
 Phase 4 backend tests cover version immutability, approval checks, export contents, artwork invalidation, local limits, project isolation, archive protection, publication URL/time validation, duplicate records and mocked Gemini parsing. The complete suite passes (44 tests); TypeScript build, ESLint and Ruff pass. Browser QA covers draft creation, editing, approval, downloadable export, manual publication recording and responsive layout using test fixtures.
 
-Live Gemini captions/research and Cloudflare image quality still require configured credentials and real-content evaluation. No actual social posts were published. External API account plans must be checked by the owner. Reference licences and factual accuracy remain human review responsibilities.
+Live Gemini captions/research and Gemini image quality still require configured credentials and real-content evaluation. No actual social posts were published. External API account plans must be checked by the owner. Reference licences and factual accuracy remain human review responsibilities.
 
 Phase 5 will add authorized platform publishing, dry runs, quotas and remote-outcome reconciliation. Phase 6 will add measured performance tracking. Phase 7 covers operational polish. The current **Publish** and **Performance** navigation entries remain future placeholders; Phase 4 manual posting lives under **Captions & tags**.
