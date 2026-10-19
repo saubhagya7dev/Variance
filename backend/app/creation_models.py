@@ -67,6 +67,8 @@ class CreationBatch(SQLModel, table=True):
     project_id: str = Field(foreign_key="character_projects.id")
     prompt_id: str = Field(foreign_key="prompt_versions.id")
     mode: str = "manual"
+    provider: str = "manual"
+    model: str = ""
     status: str = "awaiting_import"
     error: str = ""
     target_count: int = 4
