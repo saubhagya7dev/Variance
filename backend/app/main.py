@@ -12,6 +12,7 @@ from app.generation import recover, worker
 from app.routers.characters import router as characters_router
 from app.routers.creation import router as creation_router
 from app.routers.discovery import router as discovery_router
+from app.routers.posts import router as posts_router
 
 
 def create_app(config: Settings = settings) -> FastAPI:
@@ -38,6 +39,7 @@ def create_app(config: Settings = settings) -> FastAPI:
     app.include_router(characters_router)
     app.include_router(discovery_router)
     app.include_router(creation_router)
+    app.include_router(posts_router)
     app.add_middleware(TrustedHostMiddleware, allowed_hosts=["localhost", "127.0.0.1", "[::1]"])
 
     @app.middleware("http")
@@ -71,7 +73,7 @@ def create_app(config: Settings = settings) -> FastAPI:
     @app.get("/api/capabilities")
     def capabilities():
         return {
-            "phase": 3,
+            "phase": 4,
             "research": {
                 "available": config.research_provider == "wikipedia" or bool(config.gemini_api_key),
                 "configured": config.research_provider == "wikipedia"
@@ -92,7 +94,12 @@ def create_app(config: Settings = settings) -> FastAPI:
                 "configured": config.generation_ready,
                 "manual_workflow": True,
             },
-            "captions": {"available": False, "phase": 4},
+            "captions": {
+                "available": True,
+                "phase": 4,
+                "provider": "local",
+                "configured": bool(config.gemini_api_key and config.gemini_captions_enabled),
+            },
             "publishing": {"available": False, "phase": 5},
             "metrics": {"available": False, "phase": 6},
         }
