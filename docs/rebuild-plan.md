@@ -1,6 +1,6 @@
 # Character-first rebuild
 
-Approved scope: phases 1–4 are implemented, with free/keyless defaults and optional provider integrations. Live image quality and optional APIs still require owner evaluation with credentials. Work directly on main, commit each file separately plus feature checkpoints, and never push unless separately requested. The user's sketch defines information hierarchy, not literal styling.
+Approved scope: phases 1â€“4 are implemented, with free/keyless defaults and optional provider integrations. Live image quality and optional APIs still require owner evaluation with credentials. Work directly on main, commit each file separately plus feature checkpoints, and never push unless separately requested. The user's sketch defines information hierarchy, not literal styling.
 
 ## Product
 
@@ -27,7 +27,7 @@ A single-user local studio: fictional character â†’ identity confirmation â†’ gr
 
 ## Current decisions and remaining checks
 
-Styles are flexible per project. Manual and API image routes coexist. Wikipedia/Commons are the keyless research/reference defaults; Cloudflare Workers Free is the optional image provider. Phase 4 supports Instagram and Facebook manual posting; X remains outside this release. Gemini captions are optional and disabled by default. Real artwork quality, live optional provider calls, account access and billing plans still need owner verification.
+Styles are flexible per project. Manual and API image routes coexist. Wikipedia/Commons are the keyless research/reference defaults; Gemini daily-limited tool usage is the manual route. The optional Gemini API adapter is paid-only and disabled by default. Phase 4 supports Instagram and Facebook manual posting; X remains outside this release. Gemini captions are optional and disabled by default. Real artwork quality, live optional provider calls, account access and billing plans still need owner verification.
 
 ## Commit checkpoints
 
@@ -38,13 +38,13 @@ Styles are flexible per project. Manual and API image routes coexist. Wikipedia/
 
 ## Current milestone
 
-Phases 1–4 implemented: character workspace, research/reference discovery, prompt and image studio, caption editing and manual-posting workflow. Automated publishing and performance tracking remain unavailable. See [complete setup guide](SETUP-PHASES-1-4.md) for verified checks and remaining limits.
+Phases 1â€“4 implemented: character workspace, research/reference discovery, prompt and image studio, caption editing and manual-posting workflow. Automated publishing and performance tracking remain unavailable. See [complete setup guide](SETUP-PHASES-1-4.md) for verified checks and remaining limits.
 
 ## Phase 2 delivered
 
 Free Wikipedia extracts and Commons reference discovery are implemented with persistent research/source evidence, local uploads, validated imports, deduplication, selection and removal. Optional Gemini grounded research is available after explicit configuration; live Gemini verification remains pending a user key. The interface retains the warm brown theme. File-scoped commits and feature checkpoints replace the earlier milestone-only commit policy.
 
 
-## Phase 3–4 delivered
+## Phase 3â€“4 delivered
 
-Phase 3 adds frozen prompt versions, manual reference packs, imported artwork, optional durable Cloudflare batches and explicit image reviews. Phase 4 adds free local caption templates, optional Gemini drafts, source context, Instagram/Facebook previews, editable alt text and disclosure, immutable post versions, approval/export gates and self-reported manual publication records. Export never publishes. Post edits create a new draft; changed artwork approval invalidates existing post export eligibility. Live provider and real-content quality checks remain pending owner credentials/evaluation.
+Phase 3 adds frozen prompt versions, manual reference packs, imported artwork, optional durable Gemini API batches and explicit image reviews. Phase 4 adds free local caption templates, optional Gemini drafts, source context, Instagram/Facebook previews, editable alt text and disclosure, immutable post versions, approval/export gates and self-reported manual publication records. Export never publishes. Post edits create a new draft; changed artwork approval invalidates existing post export eligibility. Live provider and real-content quality checks remain pending owner credentials/evaluation.
