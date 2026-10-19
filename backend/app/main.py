@@ -90,7 +90,9 @@ def create_app(config: Settings = settings) -> FastAPI:
             "generation": {
                 "available": config.generation_ready,
                 "phase": 3,
-                "provider": "cloudflare",
+                "provider": "gemini",
+                "model": config.gemini_image_model,
+                "free_api_available": False,
                 "configured": config.generation_ready,
                 "manual_workflow": True,
             },
