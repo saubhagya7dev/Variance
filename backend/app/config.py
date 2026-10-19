@@ -20,17 +20,14 @@ class Settings(BaseSettings):
     research_provider: Literal["wikipedia", "gemini"] = "wikipedia"
     gemini_model: str = Field(default="gemini-2.5-flash", pattern=r"^[a-zA-Z0-9.-]+$")
     asset_dir: Path = ROOT / "data" / "references"
-    cloudflare_account_id: str = Field(default="", pattern=r"^([a-fA-F0-9]{32})?$")
-    cloudflare_api_token: str = ""
-    cloudflare_free_plan_confirmed: bool = False
+    gemini_image_model: Literal["gemini-nano-banana-2.1", "gemini-3.1-flash-image"] = (
+        "gemini-nano-banana-2.1"
+    )
+    gemini_image_paid_enabled: bool = False
 
     @property
     def generation_ready(self) -> bool:
-        return bool(
-            self.cloudflare_account_id
-            and self.cloudflare_api_token
-            and self.cloudflare_free_plan_confirmed
-        )
+        return bool(self.gemini_api_key and self.gemini_image_paid_enabled)
 
 
 settings = Settings()
