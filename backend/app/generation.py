@@ -13,36 +13,44 @@ from app.creation_models import Artwork, CreationBatch, PromptVersion
 from app.models import timestamp
 from app.providers.runner import call_provider
 
-MODEL = "@cf/black-forest-labs/flux-2-klein-4b"
-SIZES = {
-    "1:1": (1024, 1024),
-    "4:5": (768, 960),
-    "3:2": (1152, 768),
-    "16:9": (1024, 576),
-    "9:16": (576, 1024),
-}
 
-
-async def generate(config, prompt):
+async def generate(config, prompt, model=None):
+    if not config.generation_ready:
+        raise ValueError(
+            "Gemini image API requires explicit paid enablement; no free API tier is available."
+        )
     context = json.loads(prompt.context_json)
-    width, height = SIZES[json.loads(prompt.direction_json)["aspect_ratio"]]
-    files = {
-        "prompt": (None, prompt.prompt_text),
-        "width": (None, str(width)),
-        "height": (None, str(height)),
-    }
-    for i, ref in enumerate(context["references"]):
+    parts = [{"type": "text", "text": prompt.prompt_text}]
+    for ref in context["references"]:
         with Image.open(config.asset_dir / f"{ref['digest']}.png") as image:
-            image.thumbnail((504, 504))
+            image.thumbnail((1536, 1536))
             output = BytesIO()
             image.save(output, "PNG")
-            files[f"input_image_{i}"] = (f"reference-{i}.png", output.getvalue(), "image/png")
-    async with httpx.AsyncClient(timeout=120) as client:
+            parts.append(
+                {
+                    "type": "image",
+                    "mime_type": "image/png",
+                    "data": base64.b64encode(output.getvalue()).decode(),
+                }
+            )
+    payload = {
+        "model": model or config.gemini_image_model,
+        "input": parts,
+        "response_format": {
+            "type": "image",
+            "aspect_ratio": json.loads(prompt.direction_json)["aspect_ratio"],
+            "image_size": "1K",
+        },
+        "store": False,
+    }
+    if len(json.dumps(payload).encode()) > 18 * 1024 * 1024:
+        raise ValueError("Reference payload is too large. Use fewer references.")
+    async with httpx.AsyncClient(timeout=120, trust_env=False) as client:
         async with client.stream(
             "POST",
-            f"https://api.cloudflare.com/client/v4/accounts/{config.cloudflare_account_id}/ai/run/{MODEL}",
-            headers={"Authorization": f"Bearer {config.cloudflare_api_token}"},
-            files=files,
+            "https://generativelanguage.googleapis.com/v1beta/interactions",
+            headers={"x-goog-api-key": config.gemini_api_key},
+            json=payload,
         ) as response:
             response.raise_for_status()
             raw = bytearray()
@@ -51,9 +59,26 @@ async def generate(config, prompt):
                 if len(raw) > 12 * 1024 * 1024:
                     raise ValueError("Provider response too large")
     result = json.loads(raw)
-    if not result.get("success"):
-        raise ValueError("Provider rejected generation")
-    return base64.b64decode(result["result"]["image"], validate=True)
+    images = [
+        part
+        for step in result.get("steps", [])
+        if step.get("type") == "model_output"
+        for part in step.get("content", [])
+        if part.get("type") == "image"
+    ]
+    image = images[0] if len(images) == 1 else {}
+    if (
+        result.get("status") != "completed"
+        or image.get("mime_type") not in {"image/png", "image/jpeg", "image/webp"}
+        or not image.get("data")
+    ):
+        raise ValueError(
+            "Gemini returned no completed image. The request may have been blocked or returned text only."
+        )
+    decoded = base64.b64decode(image["data"], validate=True)
+    if len(decoded) > 8 * 1024 * 1024:
+        raise ValueError("Generated image exceeds 8 MB.")
+    return decoded
 
 
 def recover(engine):
@@ -73,16 +98,16 @@ async def run_batch(state, batch_id):
         with Session(state.engine) as db:
             batch = db.get(CreationBatch, batch_id)
             prompt = db.get(PromptVersion, batch.prompt_id)
-            if not state.config.generation_ready:
+            if not state.config.generation_ready or batch.provider != "gemini" or not batch.model:
                 raise ValueError("Generation unavailable")
         for i in range(batch.target_count):
             with Session(state.engine) as db:
                 project_check(db, batch.project_id, write=True)
             raw = await call_provider(
                 state.engine,
-                "cloudflare",
+                "gemini",
                 "image_generation",
-                lambda: generate(state.config, prompt),
+                lambda: generate(state.config, prompt, batch.model),
                 timeout=130,
             )
             await asyncio.to_thread(
@@ -98,7 +123,7 @@ async def run_batch(state, batch_id):
         with Session(state.engine) as db:
             row = db.get(CreationBatch, batch_id)
             row.status = "failed"
-            row.error = "Generation did not complete. Check credentials, free quota, reference files and provider availability. Saved results are kept. Requests are never automatically retried."
+            row.error = "Generation did not complete. Check Gemini model access, billing/quota, reference files and provider availability. Saved results are kept. Requests are never automatically retried."
             row.updated_at = timestamp()
             db.add(row)
             db.commit()
