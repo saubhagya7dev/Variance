@@ -15,6 +15,7 @@ class Settings(BaseSettings):
     publish_enabled: bool = False
     daily_post_cap: int = 3
     gemini_api_key: str = ""
+    gemini_captions_enabled: bool = False
     brave_api_key: str = ""
     research_provider: Literal["wikipedia", "gemini"] = "wikipedia"
     gemini_model: str = Field(default="gemini-2.5-flash", pattern=r"^[a-zA-Z0-9.-]+$")
