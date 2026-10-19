@@ -1,6 +1,6 @@
 # Character-first rebuild
 
-Approved scope: phases 0–1 are complete; phase 2 is now approved with free providers by default. Commit milestones locally. Never push unless separately requested. The user's sketch defines information hierarchy, not literal styling.
+Approved scope: phases 1–4 are implemented, with free/keyless defaults and optional provider integrations. Live image quality and optional APIs still require owner evaluation with credentials. Work directly on main, commit each file separately plus feature checkpoints, and never push unless separately requested. The user's sketch defines information hierarchy, not literal styling.
 
 ## Product
 
@@ -25,9 +25,9 @@ A single-user local studio: fictional character â†’ identity confirmation â†’ gr
 - ADR R4: Keep the previous commit on main. Once replacement health, tests and UI build pass, remove superseded source/tests from the rebuild branch. Preserve ignored local data. New database uses a different filename; no automatic legacy conversion.
 - ADR R5: Provider wrapper logs each attempt without request content/secrets. Reads can retry transient errors; side-effect calls require an explicit idempotency/reconciliation design before retries are allowed. No configured provider is invoked in phases 0â€“1.
 
-## Outstanding decisions
+## Current decisions and remaining checks
 
-Niche style and quality bar; API-based generation versus the earlier ChatGPT-only requirement; one generation provider with confirmed reference support and cost; search provider; social account availability and whether X belongs in the first publishing release. None blocks phases 0â€“1.
+Styles are flexible per project. Manual and API image routes coexist. Wikipedia/Commons are the keyless research/reference defaults; Cloudflare Workers Free is the optional image provider. Phase 4 supports Instagram and Facebook manual posting; X remains outside this release. Gemini captions are optional and disabled by default. Real artwork quality, live optional provider calls, account access and billing plans still need owner verification.
 
 ## Commit checkpoints
 
@@ -38,8 +38,13 @@ Niche style and quality bar; API-based generation versus the earlier ChatGPT-onl
 
 ## Current milestone
 
-Phases 0â€“1 implemented and validated: typed foundation, persistent confirmed identity, editable notes/direction, dark responsive workspace, history and reversible archive. Phases 3–7 remain planned and unavailable in the interface. See validation.md for executed checks.
+Phases 1–4 implemented: character workspace, research/reference discovery, prompt and image studio, caption editing and manual-posting workflow. Automated publishing and performance tracking remain unavailable. See [complete setup guide](SETUP-PHASES-1-4.md) for verified checks and remaining limits.
 
 ## Phase 2 delivered
 
 Free Wikipedia extracts and Commons reference discovery are implemented with persistent research/source evidence, local uploads, validated imports, deduplication, selection and removal. Optional Gemini grounded research is available after explicit configuration; live Gemini verification remains pending a user key. The interface retains the warm brown theme. File-scoped commits and feature checkpoints replace the earlier milestone-only commit policy.
+
+
+## Phase 3–4 delivered
+
+Phase 3 adds frozen prompt versions, manual reference packs, imported artwork, optional durable Cloudflare batches and explicit image reviews. Phase 4 adds free local caption templates, optional Gemini drafts, source context, Instagram/Facebook previews, editable alt text and disclosure, immutable post versions, approval/export gates and self-reported manual publication records. Export never publishes. Post edits create a new draft; changed artwork approval invalidates existing post export eligibility. Live provider and real-content quality checks remain pending owner credentials/evaluation.
