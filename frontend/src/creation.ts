@@ -2,7 +2,7 @@ import { request } from './api'
 export type Direction = { style: string; medium: string; mood: string; palette: string; lighting: string; composition: string; preserve: string; avoid: string; aspect_ratio: string }
 export type Prompt = { id: string; version: number; direction: Direction; prompt_text: string; context: { references: { id: string; title: string }[] }; created_at: string }
 export type Preview = Pick<Prompt, 'context' | 'prompt_text'> & { context_hash: string }
-export type Batch = { id: string; prompt_id: string; mode: 'manual' | 'api'; target_count: number; status: string; error: string; created_at: string }
+export type Batch = { id: string; prompt_id: string; mode: 'manual' | 'api'; provider: string; model: string; target_count: number; status: string; error: string; created_at: string }
 export type Artwork = { id: string; title: string; width: number; height: number; decision: 'pending' | 'approved' | 'rejected'; review_note: string; revision: number }
 export const base = (id: string) => `/characters/${id}`
 export const creation = {
