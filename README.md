@@ -1,16 +1,17 @@
 # Variance â€” personal character studio
 
-A character-first creative workspace with an warm espresso, amber light and subtle grain interface. React/TypeScript supplies the responsive studio; FastAPI and SQLite persist character projects locally.
+A character-first creative workspace with a warm espresso, amber light and subtle grain interface. React/TypeScript supplies the responsive studio; FastAPI and SQLite persist character projects locally.
 
-## Working today (phases 0â€“1)
+## Working today (phases 1–4)
 
-- Confirm character name, franchise and appearance before creating a project.
-- Save creative direction and personal notes, with revision conflict protection.
-- Reopen projects, search history, archive and restore, and export notes as JSON.
-- Responsive research/reference workspace, connection status and guided empty states.
-- In-tab drafts survive navigation; use **Save direction** for durable storage.
+- Persistent character projects, notes, history and reversible archiving.
+- Free Wikipedia research, Commons references and local image uploads; optional Gemini research.
+- Flexible creative direction, immutable prompt versions, manual reference packs and result imports; optional Cloudflare API batches.
+- Image comparison and explicit approval/rejection.
+- Instagram/Facebook caption templates and optional Gemini drafts, editable hashtags/alt text/disclosure, version history and approximate previews.
+- Post approval, export packs, clipboard copy and explicit self-reported manual publication records.
 
-Research and reference importing are available through free providers; optional Gemini needs explicit configuration. Image generation, captions, publishing and analytics remain planned.
+**[Complete Phase 1–4 setup and user guide](docs/SETUP-PHASES-1-4.md)** covers installation, every phase, optional provider configuration, backups, troubleshooting and remaining limitations. Local templates and manual import/export work without keys. Live Gemini/Cloudflare validation still requires credentials. Connected publishing and analytics remain future phases.
 
 ## Run locally
 
@@ -53,7 +54,7 @@ See [validation](docs/validation.md), [architecture](docs/architecture.md), and 
 
 ## Git workflow
 
-Work is committed per feature directly on `main`. No automatic pushes. The former application remains recoverable through Git history; its superseded source is removed from this branch.
+Each changed file is committed separately directly on `main`, followed by feature checkpoint commits. No automatic pushes. The former application remains recoverable through Git history; its superseded source is removed from this branch.
 
 ## Phase 2 â€” research and references
 
