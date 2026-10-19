@@ -165,7 +165,7 @@ def create_batch(project_id: str, payload: BatchCreate, request: Request):
             if not request.app.state.config.generation_ready:
                 raise HTTPException(
                     409,
-                    "Configure Cloudflare Free plan credentials first. Manual generation is available now.",
+                    "Gemini image generation has no free API tier. Manual generation is available. Paid API use requires GEMINI_API_KEY and explicit GEMINI_IMAGE_PAID_ENABLED=true.",
                 )
             prompt = prompt_for(db, project_id, payload.prompt_id)
             if len(json.loads(prompt.context_json)["references"]) > 4:
@@ -174,6 +174,8 @@ def create_batch(project_id: str, payload: BatchCreate, request: Request):
                     "API generation supports up to four references. Save a new prompt with fewer references or use manual mode.",
                 )
         row = CreationBatch(
+            provider="gemini" if payload.mode == "api" else "manual",
+            model=request.app.state.config.gemini_image_model if payload.mode == "api" else "",
             project_id=project_id,
             **payload.model_dump(),
             status="queued" if payload.mode == "api" else "awaiting_import",
