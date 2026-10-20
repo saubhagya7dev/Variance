@@ -4,7 +4,7 @@ export interface CharacterProject {
   created_at: string; updated_at: string;
 }
 export interface Identity { name: string; franchise: string; variant: string; fictional_confirmed: true }
-export interface Capability { available: boolean; configured?: boolean; phase: number; provider?: string }
+export interface Capability { available: boolean; configured?: boolean; phase: number; provider?: string; model?: string; providers?: { wikipedia: boolean; gemini: boolean } }
 export type Capabilities = Record<'research' | 'references' | 'generation' | 'captions' | 'publishing' | 'metrics', Capability>
 
 export async function request<T>(path: string, method = 'GET', data?: unknown): Promise<T> {
