@@ -62,7 +62,7 @@ Use your own Google API key from a project without billing enabled if you want t
 
 ```dotenv
 GEMINI_API_KEY=your_local_key
-GEMINI_MODEL=gemini-2.5-flash
+GEMINI_MODEL=gemini-3.8-flash
 RESEARCH_PROVIDER=gemini
 GEMINI_CAPTIONS_ENABLED=true
 ```
