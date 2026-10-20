@@ -79,6 +79,8 @@ def create_app(config: Settings = settings) -> FastAPI:
                 "configured": config.research_provider == "wikipedia"
                 or bool(config.gemini_api_key),
                 "provider": config.research_provider,
+                "model": config.gemini_model,
+                "providers": {"wikipedia": True, "gemini": bool(config.gemini_api_key)},
                 "phase": 2,
             },
             "references": {
