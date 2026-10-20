@@ -24,6 +24,12 @@ class Settings(BaseSettings):
         "gemini-nano-banana-2.1"
     )
     gemini_image_paid_enabled: bool = False
+    meta_graph_version: str = Field(default="", pattern=r"^(v\d+\.\d+)?$")
+    instagram_access_token: str = ""
+    facebook_page_access_token: str = ""
+    facebook_page_id: str = Field(default="", pattern=r"^\d*$")
+    threads_access_token: str = ""
+    x_user_access_token: str = ""
 
     @property
     def generation_ready(self) -> bool:
