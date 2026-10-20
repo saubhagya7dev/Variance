@@ -1,5 +1,7 @@
 import { useMutation, useQuery } from '@tanstack/react-query'
+import { useState } from 'react'
 import { request } from '../api'
+import SocialSetupGuide from './SocialSetupGuide'
 import '../connections.css'
 
 interface Connection { platform: string; configured: boolean; missing: string[] }
@@ -19,9 +21,11 @@ function ConnectionCard({ connection }: { connection: Connection }) {
 }
 
 export default function SocialConnections() {
+  const [guideOpen, setGuideOpen] = useState(false)
   const query = useQuery({ queryKey: ['social-connections'], queryFn: () => request<Connection[]>('/connections') })
   return <section aria-label="Social account connections"><h2>Your social connections.</h2><p>Credentials stay on the backend. Check connection reads account identity only; it does not publish. Provider API usage limits or charges may apply.</p><p>Use an Instagram Login token, a Facebook Page token, a Threads token, and an X OAuth 2.0 user token respectively. Live posting and automatic token renewal are not enabled yet.</p>
-    <button className="text-button" onClick={() => void query.refetch()}>Refresh configuration</button>
+    <div className="social-guide-platforms"><button className="secondary small" onClick={() => setGuideOpen(true)} aria-haspopup="dialog">How to set up social accounts</button><button className="text-button" onClick={() => void query.refetch()}>Refresh configuration</button></div>
+    {guideOpen && <SocialSetupGuide close={() => setGuideOpen(false)} />}
     {query.isPending && <p role="status">Checking local configuration…</p>}
     {query.isError && <p role="alert">{query.error.message}</p>}
     <div className="social-connection-grid">{query.data?.map(connection => <ConnectionCard key={`${connection.platform}:${connection.configured}`} connection={connection} />)}</div>
