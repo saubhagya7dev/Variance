@@ -11,7 +11,7 @@ export interface Reference extends Candidate { selected: boolean; width: number;
 const base = (id: string) => `/characters/${id}`
 export const discovery = {
   research: (id: string) => request<ResearchSnapshot[]>(base(id) + '/research'),
-  runResearch: (id: string) => request<ResearchSnapshot>(base(id) + '/research', 'POST'),
+  runResearch: (id: string, provider: 'wikipedia' | 'gemini') => request<ResearchSnapshot>(base(id) + `/research?provider=${provider}`, 'POST'),
   candidates: (id: string) => request<Candidate[]>(base(id) + '/candidates'),
   search: (id: string, query: string) => request<Candidate[]>(base(id) + '/candidates', 'POST', { query }),
   import: (id: string, candidate: string) => request<Reference>(base(id) + `/candidates/${candidate}/import`, 'POST'),
