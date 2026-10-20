@@ -18,6 +18,51 @@ def png():
     return output.getvalue()
 
 
+def test_research_provider_choice_overrides_default_and_records_source(client, monkeypatch):
+    project = create(client)
+    path = f"/api/characters/{project['id']}/research"
+    config = client.app.state.config
+    config.gemini_api_key = "test-key"
+    calls = []
+
+    async def wiki(identity):
+        calls.append("wikipedia")
+        return ResearchBrief(text="Wikipedia evidence", sources=[], citations=[])
+
+    async def gemini(identity, key, model):
+        assert key == "test-key"
+        assert model == "gemini-3.8-flash"
+        calls.append("gemini")
+        return ResearchBrief(text="Gemini evidence", sources=[], citations=[])
+
+    monkeypatch.setattr(discovery, "wikipedia_research", wiki)
+    monkeypatch.setattr(discovery, "gemini_research", gemini)
+    assert client.post(path + "?provider=gemini").json()["provider"] == "gemini"
+    config.research_provider = "gemini"
+    assert client.post(path + "?provider=wikipedia").json()["provider"] == "wikipedia"
+    assert client.post(path).json()["provider"] == "gemini"
+    assert calls == ["gemini", "wikipedia", "gemini"]
+    assert {r["provider"] for r in client.get(path).json()} == {"gemini", "wikipedia"}
+    assert client.post(path + "?provider=unknown").status_code == 422
+
+
+def test_research_missing_gemini_key_keeps_wikipedia_available(client, monkeypatch):
+    project = create(client)
+    path = f"/api/characters/{project['id']}/research"
+    client.app.state.config.research_provider = "gemini"
+    caps = client.get("/api/capabilities").json()["research"]
+    assert caps["providers"] == {"wikipedia": True, "gemini": False}
+    assert caps["model"] == "gemini-3.8-flash"
+    assert client.post(path + "?provider=gemini").status_code == 503
+    assert client.get(path).json() == []
+
+    async def wiki(identity):
+        return ResearchBrief(text="Evidence", sources=[], citations=[])
+
+    monkeypatch.setattr(discovery, "wikipedia_research", wiki)
+    assert client.post(path + "?provider=wikipedia").status_code == 200
+
+
 def test_research_persists_evidence_and_failed_refresh_keeps_previous(client, monkeypatch):
     project = create(client)
     path = f"/api/characters/{project['id']}/research"
