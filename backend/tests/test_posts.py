@@ -153,7 +153,7 @@ def test_limits_ownership_archive_and_gemini_gate(client):
         (400, "rejected"),
         (401, "authentication"),
         (403, "access denied"),
-        (404, "gemini-2.5-flash"),
+        (404, "gemini-3.8-flash"),
         (429, "quota"),
         (503, "HTTP 503"),
     ],
