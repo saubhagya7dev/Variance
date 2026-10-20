@@ -2,6 +2,9 @@ import json
 from io import BytesIO
 from zipfile import ZipFile
 
+import httpx
+import pytest
+
 from app.post_service import gemini_draft
 from tests.test_creation import batch, pixels, prepared
 
@@ -142,6 +145,49 @@ def test_limits_ownership_archive_and_gemini_gate(client):
         client.post(path + f"/posts/{post['id']}/versions", json=edit_payload(post)).status_code
         == 409
     )
+
+
+@pytest.mark.parametrize(
+    ("status", "expected"),
+    [
+        (400, "rejected"),
+        (401, "authentication"),
+        (403, "access denied"),
+        (404, "gemini-2.5-flash"),
+        (429, "quota"),
+        (503, "HTTP 503"),
+    ],
+)
+def test_caption_provider_errors_are_actionable_and_preserve_work(
+    client, monkeypatch, status, expected
+):
+    from app.routers import posts
+
+    path, art, _ = ready(client)
+    config = client.app.state.config
+    config.gemini_api_key = "secret-test-key"
+    config.gemini_captions_enabled = True
+
+    async def fail(*args):
+        response = httpx.Response(
+            status,
+            request=httpx.Request(
+                "POST",
+                "https://generativelanguage.googleapis.com/v1beta/models/test:generateContent",
+            ),
+            json={"error": {"message": "secret-test-key private-caption-context"}},
+        )
+        response.raise_for_status()
+
+    monkeypatch.setattr(posts, "gemini_draft", fail)
+    response = client.post(path + "/posts", json={"artwork_id": art["id"], "provider": "gemini"})
+    assert response.status_code == 502
+    assert expected in response.json()["detail"]
+    assert "secret-test-key" not in response.text
+    assert "private-caption-context" not in response.text
+    assert len(client.get(path + "/posts").json()) == 1
+    assert not client.app.state.discovery_busy
+    assert client.post(path + "/posts", json={"artwork_id": art["id"]}).status_code == 200
 
 
 async def test_gemini_caption_contract_and_invalid_output(client, monkeypatch):
