@@ -10,6 +10,7 @@ from app.config import ROOT, Settings, settings
 from app.db import make_engine, migrate
 from app.generation import recover, worker
 from app.routers.characters import router as characters_router
+from app.routers.connections import router as connections_router
 from app.routers.creation import router as creation_router
 from app.routers.discovery import router as discovery_router
 from app.routers.posts import router as posts_router
@@ -42,6 +43,7 @@ def create_app(config: Settings = settings) -> FastAPI:
     app.include_router(creation_router)
     app.include_router(posts_router)
     app.include_router(publishing_router)
+    app.include_router(connections_router)
     app.add_middleware(TrustedHostMiddleware, allowed_hosts=["localhost", "127.0.0.1", "[::1]"])
 
     @app.middleware("http")
