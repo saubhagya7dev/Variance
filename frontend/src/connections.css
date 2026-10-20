@@ -1,0 +1,12 @@
+.social-connection-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin: 16px 0 28px;
+}
+.social-connection-grid code { overflow-wrap: anywhere; }
+.social-connection-grid .creation-panel { margin: 0; }
+.social-connection-grid button { margin-top: 12px; }
+@media (max-width: 720px) {
+  .social-connection-grid { grid-template-columns: 1fr; }
+}
