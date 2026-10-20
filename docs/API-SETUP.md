@@ -30,7 +30,7 @@ Update these entries in the existing file, replacing the placeholder with your k
 ```dotenv
 GEMINI_API_KEY=your_key_here
 RESEARCH_PROVIDER=gemini
-GEMINI_MODEL=gemini-2.5-flash
+GEMINI_MODEL=gemini-3.8-flash
 GEMINI_CAPTIONS_ENABLED=true
 GEMINI_IMAGE_PAID_ENABLED=false
 ```
