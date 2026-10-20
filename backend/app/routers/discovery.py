@@ -1,6 +1,7 @@
 import asyncio
 import http.client
 from contextlib import asynccontextmanager
+from typing import Literal
 
 import httpx
 from fastapi import APIRouter, HTTPException, Query, Request
@@ -105,17 +106,20 @@ def research_history(project_id: str, request: Request):
 
 
 @router.post("/research")
-async def research(project_id: str, request: Request):
+async def research(
+    project_id: str, request: Request, provider: Literal["wikipedia", "gemini"] | None = None
+):
     config = request.app.state.config
+    selected_provider = provider or config.research_provider
     async with operation(request, project_id):
         with Session(request.app.state.engine) as db:
             project = project_check(db, project_id, write=True)
             identity = {key: getattr(project, key) for key in ("name", "franchise", "variant")}
-        if config.research_provider == "gemini":
+        if selected_provider == "gemini":
             if not config.gemini_api_key:
                 raise HTTPException(
                     503,
-                    "Set GEMINI_API_KEY in the local .env and restart, or use RESEARCH_PROVIDER=wikipedia.",
+                    "Set GEMINI_API_KEY in the local .env and restart, or select Wikipedia.",
                 )
 
             def provider_call():
@@ -127,7 +131,7 @@ async def research(project_id: str, request: Request):
 
         brief = await call_provider(
             request.app.state.engine,
-            config.research_provider,
+            selected_provider,
             "research",
             provider_call,
             timeout=90,
@@ -137,7 +141,7 @@ async def research(project_id: str, request: Request):
             project_check(db, project_id, write=True)
             row = ResearchSnapshot(
                 project_id=project_id,
-                provider=config.research_provider,
+                provider=selected_provider,
                 payload=brief.model_dump_json(),
             )
             db.add(row)
