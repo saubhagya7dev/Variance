@@ -56,6 +56,8 @@ Invoke-RestMethod http://127.0.0.1:8765/api/capabilities |
 
 Expect health `status: ok`, research `provider: gemini`, and captions `configured: true`. Image generation `configured: false` is intentional.
 
+In **Character research**, choose **Gemini** or **Wikipedia** in the research provider menu before starting. Gemini uses `GEMINI_MODEL` (currently `gemini-3.8-flash`); Wikipedia needs no key. `RESEARCH_PROVIDER` sets the initial choice, and each saved research version records the provider used.
+
 These checks confirm local configuration, not Google's acceptance of your key. Run one character research request or one Gemini caption draft in the app to verify the actual API connection; it consumes your API quota.
 
 ## 4. Generate images with your Gemini tool allowance
