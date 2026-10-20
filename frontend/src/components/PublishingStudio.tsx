@@ -4,6 +4,7 @@ import { Check, CircleAlert, Send } from 'lucide-react'
 import { request } from '../api'
 import type { CharacterProject } from '../api'
 import { posts } from '../posts'
+import SocialConnections from './SocialConnections'
 
 interface Preflight {
   revision: number; content_ready: boolean; message: string; post_text: string; alt_text: string;
@@ -19,8 +20,9 @@ export default function PublishingStudio({ project, captions }: { project: Chara
   const result = run.data && run.variables?.id === post?.id && run.data.revision === post?.revision ? run.data : undefined
   return <div className="settings-page">
     <div className="page-heading"><div><span className="eyebrow">PHASE 5 / PUBLISHING</span><h1>Ready for your audience.</h1><p>Check your approved post before connecting a destination.</p></div><span className="status-chip neutral">Dry run</span></div>
+    <SocialConnections />
     <section className="panel creation-panel">
-      <Send size={24} /><h2>Instagram & Facebook</h2><p>Account connections are the next setup step. Live publishing is not enabled yet.</p>
+      <Send size={24} /><h2>Post preflight</h2><p>Current approved-post previews support Instagram and Facebook. Threads and X account checks are available above; their post editors and live publishing are planned.</p>
       {query.isPending ? <p role="status">Loading approved posts…</p> : query.isError ? <p role="alert">{query.error.message}<button className="text-button" onClick={() => void query.refetch()}>Retry</button></p> : !post ? <><p>Approve a post in Captions & tags to start a dry run.</p><button className="secondary" onClick={captions}>Open captions & tags</button></> : <>
         <label className="snapshot-picker">Approved post<select value={post.id} disabled={run.isPending} onChange={e => { setSelected(e.target.value); run.reset() }}>{approved.map(p => <option key={p.id} value={p.id}>{p.platform} · version {p.version} · {p.caption.slice(0, 55)}</option>)}</select></label>
         <p className="research-prose">{post.post_text}</p><p><strong>Alt text:</strong> {post.alt_text}</p>
