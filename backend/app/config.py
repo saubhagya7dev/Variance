@@ -18,7 +18,7 @@ class Settings(BaseSettings):
     gemini_captions_enabled: bool = False
     brave_api_key: str = ""
     research_provider: Literal["wikipedia", "gemini"] = "wikipedia"
-    gemini_model: str = Field(default="gemini-2.5-flash", pattern=r"^[a-zA-Z0-9.-]+$")
+    gemini_model: str = Field(default="gemini-3.8-flash", pattern=r"^[a-zA-Z0-9.-]+$")
     asset_dir: Path = ROOT / "data" / "references"
     gemini_image_model: Literal["gemini-nano-banana-2.1", "gemini-3.1-flash-image"] = (
         "gemini-nano-banana-2.1"
