@@ -11,18 +11,22 @@ export default function ResearchPanel({ project, saved, settings }: { project: C
   const client = useQueryClient()
   const [tab, setTab] = useState<(typeof tabs)[number]>('Overview')
   const [snapshotId, setSnapshotId] = useState('')
+  const [chosenProvider, setChosenProvider] = useState<'wikipedia' | 'gemini' | null>(null)
   const query = useQuery({ queryKey: ['research', project.id], queryFn: () => discovery.research(project.id) })
   const capabilities = useQuery({ queryKey: ['capabilities'], queryFn: api.capabilities })
-  const run = useMutation({ mutationFn: () => discovery.runResearch(project.id), onSuccess: () => {
+  const provider = chosenProvider ?? (capabilities.data?.research.provider === 'gemini' ? 'gemini' : 'wikipedia')
+  const available = provider === 'wikipedia' || capabilities.data?.research.providers?.gemini
+  const run = useMutation({ mutationFn: () => discovery.runResearch(project.id, provider), onSuccess: () => {
     setSnapshotId(''); void client.invalidateQueries({ queryKey: ['research', project.id] })
   } })
   const snapshot = query.data?.find(s => s.id === snapshotId) ?? query.data?.[0]
   const brief = snapshot?.brief
-  const provider = capabilities.data?.research.provider
   const linkedEvidence = brief?.citations.filter(c => tab !== 'Visual DNA' || brief.visual_details.includes(c.text)) ?? []
   return <section className="panel research-panel" aria-labelledby="research-heading">
     <div className="panel-heading"><div><span className="panel-icon warm"><Sparkles size={17} /></span><h2 id="research-heading">Character research</h2><span className="provider-tag">{provider ?? 'SOURCES'}</span></div><button className="icon-button" onClick={settings} aria-label="Research connection settings"><Link2 size={15} /></button></div>
-    <div className="discovery-actions"><div><strong>{provider === 'gemini' ? 'Research with Gemini' : 'Discover source extracts'}</strong><p>{provider === 'gemini' ? 'Uses your configured account. Review its quota before running.' : 'Free Wikipedia excerpts. Review matches against your exact character and version.'}</p></div><button className="secondary small" disabled={run.isPending || !capabilities.data?.research.available} onClick={() => run.mutate()}><RefreshCw size={13} className={run.isPending ? 'spinning' : ''} />{run.isPending ? 'Researching…' : snapshot ? 'Refresh research' : 'Start research'}</button></div>
+    <label className="snapshot-picker">Research provider<select value={provider} disabled={run.isPending} onChange={e => { setChosenProvider(e.target.value as 'wikipedia' | 'gemini'); run.reset() }}><option value="wikipedia">Wikipedia · free source extracts</option><option value="gemini">Gemini · AI research with sources</option></select></label>
+    <div className="discovery-actions"><div><strong>{provider === 'gemini' ? `Research with ${capabilities.data?.research.model ?? 'Gemini'}` : 'Discover source extracts'}</strong><p>{provider === 'gemini' ? 'Sends character identity to Google for a sourced brief. Uses your account quota.' : 'Free Wikipedia excerpts. Review matches against your exact character and version.'}</p></div><button className="secondary small" disabled={run.isPending || !available} onClick={() => run.mutate()}><RefreshCw size={13} className={run.isPending ? 'spinning' : ''} />{run.isPending ? 'Researching…' : snapshot ? 'Refresh research' : 'Start research'}</button></div>
+    {provider === 'gemini' && !available && !capabilities.isPending && <p className="discovery-message">{capabilities.isError ? 'Could not check the Gemini connection.' : 'Add GEMINI_API_KEY to your local .env and restart the backend to use Gemini. Wikipedia is ready without a key.'}<button className="text-button" onClick={() => void capabilities.refetch()}>Refresh connection</button></p>}
     {run.isPending && <p className="discovery-message" role="status">Gathering sources. This can take up to 90 seconds; keep this view open.</p>}
     {(run.isError || query.isError) && <div className="discovery-message error-message" role="alert">{run.error?.message ?? query.error?.message}<button className="text-button" onClick={() => void query.refetch()}>Reload saved research</button></div>}
     {query.isPending && <p className="discovery-message" role="status">Loading saved research…</p>}
