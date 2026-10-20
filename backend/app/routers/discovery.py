@@ -49,11 +49,30 @@ async def operation(request: Request, project_id: str):
         raise HTTPException(422, str(exc)) from exc
     except httpx.HTTPStatusError as exc:
         status = exc.response.status_code
-        message = (
-            "Provider rate limit reached. Try again later."
-            if status == 429
-            else "Provider request failed. Check configuration and try again."
-        )
+        # Never expose upstream response bodies: they may echo keys or submitted content.
+        if exc.request.url.host == "generativelanguage.googleapis.com":
+            model = request.app.state.config.gemini_model
+            messages = {
+                400: "Gemini rejected the request (400). Check the API key and model compatibility.",
+                401: "Gemini authentication failed (401). Check GEMINI_API_KEY and restart the backend.",
+                403: "Gemini access denied (403). Check the key's project, API restrictions and permissions.",
+                404: (
+                    f"Gemini could not find model '{model}' for this request (404). "
+                    "Check GEMINI_MODEL against your available Google AI Studio models, "
+                    "then restart the backend to load your .env settings."
+                ),
+                429: "Gemini quota or rate limit reached (429). Wait for your quota to reset or use local templates.",
+            }
+            message = messages.get(
+                status,
+                f"Gemini request failed (HTTP {status}). Try again later or use local templates.",
+            )
+        else:
+            message = (
+                "Provider rate limit reached. Try again later."
+                if status == 429
+                else f"Provider request failed (HTTP {status}). Check configuration and try again."
+            )
         raise HTTPException(502, message) from exc
     except (httpx.HTTPError, http.client.HTTPException, OSError, TimeoutError) as exc:
         raise HTTPException(
