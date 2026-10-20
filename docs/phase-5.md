@@ -1,6 +1,6 @@
 # Phase 5 — authorized publishing
 
-Targets: the owner's Instagram professional account and Facebook Page. Work on main with one commit per changed file and a completion checkpoint per feature. No pushes.
+Targets: the owner's Instagram professional account, Facebook Page, Threads and X accounts. Work on main with one commit per changed file and a completion checkpoint per feature. No pushes.
 
 ## Delivery steps
 
@@ -12,7 +12,7 @@ Targets: the owner's Instagram professional account and Facebook Page. Work on m
 
 ## Current checkpoint
 
-The local dry-run workspace and API are implemented. Account connection, live adapters, persistent publication attempts, daily-limit enforcement and reconciliation remain pending. Dry-run success means the saved content is ready for connection checks; it does not mean a platform accepted or published it. `PUBLISH_ENABLED` does not enable live publishing at this checkpoint.
+The local dry-run workspace and API are implemented for Instagram/Facebook posts. Four account identity-check adapters and configuration cards are implemented; see [social connection setup](SOCIAL-CONNECTIONS.md). The owner will create the accounts/apps and add local credentials later. Browser OAuth login, token refresh, live publishing adapters, Threads/X post composition, persistent publication attempts, daily-limit enforcement and reconciliation remain pending. Dry-run success means the saved content is ready for connection checks; it does not mean a platform accepted or published it. `PUBLISH_ENABLED` does not enable live publishing at this checkpoint.
 
 ## Owner setup information needed next
 
@@ -28,4 +28,4 @@ Tokens should be added only to local configuration when the connection adapter i
 - [Instagram publishing documentation](https://developers.facebook.com/docs/instagram-platform/instagram-api-with-instagram-login/content-publishing)
 - [Facebook Page posts](https://developers.facebook.com/docs/pages-api/posts/)
 
-Direct documentation retrieval was unavailable during the first checkpoint, so no unverified live API contract is implemented here.
+Direct Meta documentation retrieval was unavailable during the first checkpoint; the connection adapters use documented account-read routes from official provider references. Live account verification remains pending credentials. No live publishing contract is implemented here.
