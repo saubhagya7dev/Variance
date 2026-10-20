@@ -73,7 +73,7 @@ Optional settings live in repository-root `.env`. Copy `.env.example` only if `.
 | --- | --- | --- |
 | `RESEARCH_PROVIDER` | `wikipedia` | Keyless research or optional `gemini` |
 | `GEMINI_API_KEY` | Empty | Optional research, caption and explicitly enabled image API calls |
-| `GEMINI_MODEL` | `gemini-2.5-flash` | Research/caption model, separate from image model |
+| `GEMINI_MODEL` | `gemini-3.8-flash` | Research/caption model, separate from image model |
 | `GEMINI_CAPTIONS_ENABLED` | `false` | Enables Gemini caption drafts when a key is configured |
 | `GEMINI_IMAGE_PAID_ENABLED` | `false` | Explicitly opts into billable image API use; keep false for the manual workflow |
 | `GEMINI_IMAGE_MODEL` | `gemini-nano-banana-2.1` | Image model; `gemini-3.1-flash-image` is also supported |
