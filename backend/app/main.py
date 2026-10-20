@@ -13,6 +13,7 @@ from app.routers.characters import router as characters_router
 from app.routers.creation import router as creation_router
 from app.routers.discovery import router as discovery_router
 from app.routers.posts import router as posts_router
+from app.routers.publishing import router as publishing_router
 
 
 def create_app(config: Settings = settings) -> FastAPI:
@@ -40,6 +41,7 @@ def create_app(config: Settings = settings) -> FastAPI:
     app.include_router(discovery_router)
     app.include_router(creation_router)
     app.include_router(posts_router)
+    app.include_router(publishing_router)
     app.add_middleware(TrustedHostMiddleware, allowed_hosts=["localhost", "127.0.0.1", "[::1]"])
 
     @app.middleware("http")
