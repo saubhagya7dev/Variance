@@ -224,11 +224,13 @@ def record_publication(project_id: str, post_id: str, payload: PublicationRecord
         db.connection().exec_driver_sql("BEGIN IMMEDIATE")
         project_check(db, project_id, write=True)
         row = post_for(db, project_id, post_id)
-        if url.hostname not in {
-            row.platform + ".com",
-            "www." + row.platform + ".com",
-            "m." + row.platform + ".com",
-        }:
+        domains = {row.platform + ".com"}
+        if row.platform == "x":
+            domains.add("twitter.com")
+        elif row.platform == "threads":
+            domains.add("threads.net")
+        hosts = {prefix + domain for domain in domains for prefix in ("", "www.", "m.")}
+        if url.hostname not in hosts:
             raise HTTPException(422, "The URL must belong to the selected platform.")
         art = artwork_for(db, project_id, row.artwork_id)
         posted_at = posted.astimezone(UTC).isoformat()
