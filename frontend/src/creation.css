@@ -52,3 +52,12 @@
 @media(max-width: 650px) { .generation-options,.artwork-grid { grid-template-columns: 1fr; } .creation-panel,.batch-review { padding: 18px; } .batch-heading label { width: 100%; } .creation-page .page-heading { flex-wrap: wrap; gap: 15px; } }
 
 .creation-page a.secondary { display: inline-flex; align-items: center; gap: 8px; padding: 10px 13px; border: 1px solid #715038; border-radius: 7px; text-decoration: none; font-size: 12px; color: #e4c6a2; }
+
+.delivery-form { display: grid; gap: 14px; margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--border, #65452d); }
+.delivery-form label { display: grid; gap: 8px; }
+.delivery-form input:not([type=checkbox]) { width: 100%; box-sizing: border-box; padding: 12px; color: #f3e5d8; background: #22180f; border: 1px solid #715137; border-radius: 8px; }
+.delivery-card { padding: 20px 0; border-top: 1px solid #543b29; overflow-wrap: anywhere; }
+.metric-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
+.metric-card { background: #241a13; padding: 18px; border: 1px solid #543b29; border-radius: 12px; }
+.metric-card dl > div { display: flex; justify-content: space-between; gap: 10px; margin: 8px 0; }
+.metric-card dd { color: #e4b47f; margin: 0; font-weight: 600; }
