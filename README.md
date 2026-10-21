@@ -4,7 +4,7 @@
 
 Variance brings a character-first workflow into one warm, dark workspace: research an identity, curate references, develop a visual direction, review artwork, and prepare approved social posts. You control each creative decision and publication step.
 
-> **Current release:** Phases 1–4. Manual posting is supported; connected publishing and analytics are planned.
+> **Current release:** Phases 1–7 implemented locally: creative workflow, gated connected publishing, scheduled native measurements and portable backups. Live social accounts still require your credentials and verification.
 >
 > **Gemini image workflow:** Use Gemini’s account-specific daily-limited tool, then import the result. Its allowance is separate from the Gemini API. Google currently lists no free image API tier. The optional API adapter is disabled by default. [Check API pricing](https://ai.google.dev/gemini-api/docs/pricing).
 
@@ -17,7 +17,9 @@ Variance brings a character-first workflow into one warm, dark workspace: resear
 | Creative direction | Flexible styles, composition, palette, identity constraints, editable versioned prompts |
 | Image studio | Frozen reference packs, Gemini manual workflow, optional Gemini API batches, comparison and review |
 | Captions & tags | Local templates or optional Gemini drafts, editable hashtags, alt text and disclosure |
-| Manual posting | Post versions, explicit approval, export packs, self-reported publication records |
+| Publishing | Four platform editors, manual packs, gated single-image publishing, destination confirmation, delivery journal and reconciliation |
+| Performance | Persistent 1h/24h/7d snapshots, native counts, explicit missing data and qualified comparisons |
+| Studio care | Consistent database/image backups, offline restore validation and operational status |
 
 ## Quick start
 
@@ -60,8 +62,9 @@ Visit **http://127.0.0.1:5173/**. Vite proxies `/api` to the backend.
 3. **Shape the direction.** Choose a style, assemble a prompt, edit it and save a version.
 4. **Generate in Gemini.** Create a manual batch, download the prompt/reference pack and use **Open Gemini**. Attach the references and paste the prompt yourself. Import the generated image into the same batch.
 5. **Review artwork.** Compare variations and approve the images you want to use.
-6. **Prepare a post.** Choose Instagram/Facebook, edit the caption, hashtags, alt text and disclosure, then save and approve a version.
-7. **Publish manually.** Export the posting pack, publish in the native platform and record the resulting URL and actual posting time.
+6. **Prepare a post.** Choose Instagram, Facebook, Threads or X, edit the caption, hashtags, alt text and disclosure, then save and approve a version.
+7. **Publish.** Export for manual posting, or configure a social account and explicitly confirm the approved version in Publish.
+8. **Measure and preserve.** Review native snapshots in Performance; download a backup from Settings.
 
 Variance cannot read or bypass Gemini’s daily allowance, generate through the Gemini website automatically, or verify that a manually recorded post exists. Exporting a pack never publishes anything.
 
@@ -79,6 +82,11 @@ Optional settings live in repository-root `.env`. Copy `.env.example` only if `.
 | `GEMINI_IMAGE_MODEL` | `gemini-nano-banana-2.1` | Image model; `gemini-3.1-flash-image` is also supported |
 | `DATABASE_URL` | Repository-local SQLite | Optional storage location override |
 | `ASSET_DIR` | `data/references` | Reference and artwork storage |
+| `PUBLISH_ENABLED` | `false` | Enables explicitly confirmed single-image publishing |
+| `DAILY_POST_CAP` | `3` | Global UTC attempt limit, including uncertain results |
+| `METRICS_ENABLED` | `false` | Runs collection for persistent 1h/24h/7d deadlines |
+
+See [social account, publishing, metrics and backup setup](docs/SETUP-PHASES-5-7.md) for tokens, permissions, image hosting and recovery. The in-app setup popup provides platform-specific steps. OAuth callbacks and automatic token renewal are not implemented.
 
 ### Optional Gemini API images
 
@@ -107,10 +115,11 @@ FastAPI serves the API and production frontend. SQLModel/SQLite persist project 
 ## Data and operational boundaries
 
 - Run a **single backend process**, bound to `127.0.0.1`. This is a personal application without multi-user authentication; do not expose it publicly.
-- Back up `data/studio.sqlite3` and the entire `data/references` directory together while the backend is stopped. Artwork is under `data/references/artwork`.
+- Download a consistent database/assets backup from Settings. Restore offline into a new empty folder with `uv run python -m app.backup archive.zip destination`; see the setup guide before switching storage paths.
 - Uploads accept static PNG/JPEG/WebP up to 8 MB and 20 megapixels. Stored references are normalized to PNG, at most 4096px per side.
 - Prompt/post versions preserve history. Changed artwork approval invalidates existing post export eligibility until a new version is reviewed.
-- Interrupted image requests are not automatically resent because their remote outcome may be uncertain. Partial results remain available.
+- Interrupted image requests and social publications are not automatically resent. Publishing reserves a durable record before contacting a provider; uncertain outcomes require reconciliation.
+- Keep the backend running for timely measurements. Overdue collections retain their actual attempt time. Manual publication records are not automatically tracked.
 - Research and generated captions require human review. Reference licences and image quality are not automatically verified.
 - Post previews and character/hashtag checks are conservative studio rules, not guarantees of platform acceptance.
 
@@ -132,6 +141,7 @@ Provider tests use mocked responses. They validate integration contracts and fai
 
 - [Complete Phase 1–4 setup guide](docs/SETUP-PHASES-1-4.md)
 - [Phase 3 image workflow](docs/phase-3.md)
+- [Phases 5–7 setup and recovery](docs/SETUP-PHASES-5-7.md)
 - [Architecture](docs/architecture.md)
 - [Implementation roadmap](docs/rebuild-plan.md)
 - [Gemini image API documentation](https://ai.google.dev/gemini-api/docs/image-generation)
@@ -139,8 +149,8 @@ Provider tests use mocked responses. They validate integration contracts and fai
 ## Roadmap
 
 - **Phases 1–4:** Character workspace, research/references, image review and manual posting.
-- **Phase 5:** Authorized publishing, dry runs, publication limits and outcome reconciliation.
-- **Phase 6:** Measured performance tracking.
-- **Phase 7:** Operational polish and recovery improvements.
+- **Phase 5 implemented:** Four account adapters, explicit publishing gates, dry runs, UTC caps, deduplication and outcome reconciliation.
+- **Phase 6 implemented:** Persistent measurement deadlines, native counts, failure/retry states and qualified observations.
+- **Phase 7 implemented:** Portable backups, validated offline restore, recovery and operational monitoring.
 
-Phase 5 has not started. Repository workflow: work directly on `main`, commit each changed file separately with feature checkpoints, and push only when explicitly requested.
+Live account setup, provider access and real-post verification are still required. Repository workflow: work directly on `main`, commit each changed file separately with feature checkpoints, and push only when explicitly requested.
