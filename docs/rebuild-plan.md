@@ -1,6 +1,6 @@
 # Character-first rebuild
 
-Approved scope: phases 1–4 are implemented, with free/keyless defaults and optional provider integrations. Live image quality and optional APIs still require owner evaluation with credentials. Work directly on main, commit each file separately plus feature checkpoints, and never push unless separately requested. The user's sketch defines information hierarchy, not literal styling.
+Approved scope: phases 1–7 are implemented, with free/keyless defaults and optional provider integrations. Live image quality and optional APIs still require owner evaluation with credentials. Work directly on main, commit each file separately plus feature checkpoints, and never push unless separately requested. The user's sketch defines information hierarchy, not literal styling.
 
 ## Product
 
@@ -27,7 +27,7 @@ A single-user local studio: fictional character → identity confirmation → gr
 
 ## Current decisions and remaining checks
 
-Styles are flexible per project. Manual and API image routes coexist. Wikipedia/Commons are the keyless research/reference defaults; Gemini daily-limited tool usage is the manual route. The optional Gemini API adapter is paid-only and disabled by default. Phase 4 supports Instagram and Facebook manual posting; X remains outside this release. Gemini captions are optional and disabled by default. Real artwork quality, live optional provider calls, account access and billing plans still need owner verification.
+Styles are flexible per project. Manual and API image routes coexist. Wikipedia/Commons are the keyless research/reference defaults; Gemini daily-limited tool usage is the manual route. The optional Gemini API adapter is paid-only and disabled by default. Post editors support Instagram, Facebook, Threads and X, with manual export and gated connected publishing. Gemini captions are optional and disabled by default. Real artwork quality, live optional provider calls, account access and billing plans still need owner verification.
 
 ## Commit checkpoints
 
@@ -38,7 +38,7 @@ Styles are flexible per project. Manual and API image routes coexist. Wikipedia/
 
 ## Current milestone
 
-Phases 1–4 implemented: character workspace, research/reference discovery, prompt and image studio, caption editing and manual-posting workflow. Automated publishing and performance tracking remain unavailable. See [complete setup guide](SETUP-PHASES-1-4.md) for verified checks and remaining limits.
+Phases 1–4 implemented: character workspace, research/reference discovery, prompt and image studio, caption editing and manual-posting workflow. Connected publishing, deadline-based performance tracking and backup/recovery are implemented; account activation and real-provider verification remain owner steps. See [complete setup guide](SETUP-PHASES-1-4.md) for verified checks and remaining limits.
 
 ## Phase 2 delivered
 
@@ -48,3 +48,8 @@ Free Wikipedia extracts and Commons reference discovery are implemented with per
 ## Phase 3–4 delivered
 
 Phase 3 adds frozen prompt versions, manual reference packs, imported artwork, optional durable Gemini API batches and explicit image reviews. Phase 4 adds free local caption templates, optional Gemini drafts, source context, Instagram/Facebook previews, editable alt text and disclosure, immutable post versions, approval/export gates and self-reported manual publication records. Export never publishes. Post edits create a new draft; changed artwork approval invalidates existing post export eligibility. Live provider and real-content quality checks remain pending owner credentials/evaluation.
+
+
+## Phases 5–7 delivered
+
+Four single-image publishing adapters use explicit destination confirmation, an opt-in enable flag, durable reservations, a UTC cap and content deduplication. Uncertain outcomes require author/text reconciliation and are never resent automatically. Native measurements have persistent 1h/24h/7d deadlines, actual collection timestamps, explicit unavailable states and qualified comparisons within an account/window. Settings provides database health, recent provider activity and a consistent checksummed database/assets ZIP. Offline restore validates paths, checksums and SQLite integrity, and writes only into an empty destination. Browser OAuth, token renewal, video/carousels, bulk scheduling and real-account acceptance are outside this release. See [Phases 5–7 setup](SETUP-PHASES-5-7.md).
