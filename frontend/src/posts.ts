@@ -3,7 +3,7 @@ import type { Artwork } from './creation'
 export interface Post {
   id: string; artwork_id: string; version: number; revision: number; platform: string;
   tone: string; caption: string; hashtags: string[]; alt_text: string; disclosure: string;
-  provider: string; status: string; post_text: string; publication_url: string; published_at: string;
+  provider: string; status: string; publication_method: string; post_text: string; publication_url: string; published_at: string;
   context: { identity: { name: string; franchise: string; variant: string }; style: string; research: null | { brief: { text: string; sources: { title: string; url: string }[] } } };
   validation: { errors: string[]; characters: number; limit: number; note: string };
 }
