@@ -1,11 +1,18 @@
 from sqlmodel import Session
 
 from app.creation_models import Artwork
+from app.post_models import PostDraft
 from tests.test_posts import approved, ready
 
 
 def test_preflight_is_local_and_does_not_publish(client):
     path, _, post = approved(client)
+    # The shared fixture is 3:4; Facebook accepts it, while Instagram requires a crop.
+    with Session(client.app.state.engine) as db:
+        row = db.get(PostDraft, post["id"])
+        row.platform = "facebook"
+        db.add(row)
+        db.commit()
     response = client.post(
         path + f"/posts/{post['id']}/preflight", json={"revision": post["revision"]}
     )
