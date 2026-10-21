@@ -13,7 +13,8 @@ class Settings(BaseSettings):
     app_env: str = "dev"
     database_url: str = f"sqlite:///{(ROOT / 'data' / 'studio.sqlite3').as_posix()}"
     publish_enabled: bool = False
-    daily_post_cap: int = 3
+    daily_post_cap: int = Field(default=3, ge=1, le=100)
+    metrics_enabled: bool = False
     gemini_api_key: str = ""
     gemini_captions_enabled: bool = False
     brave_api_key: str = ""
