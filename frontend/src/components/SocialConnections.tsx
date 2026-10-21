@@ -23,7 +23,7 @@ function ConnectionCard({ connection }: { connection: Connection }) {
 export default function SocialConnections() {
   const [guideOpen, setGuideOpen] = useState(false)
   const query = useQuery({ queryKey: ['social-connections'], queryFn: () => request<Connection[]>('/connections') })
-  return <section aria-label="Social account connections"><h2>Your social connections.</h2><p>Credentials stay on the backend. Check connection reads account identity only; it does not publish. Provider API usage limits or charges may apply.</p><p>Use an Instagram Login token, a Facebook Page token, a Threads token, and an X OAuth 2.0 user token respectively. Live posting and automatic token renewal are not enabled yet.</p>
+  return <section aria-label="Social account connections"><h2>Your social connections.</h2><p>Credentials stay on the backend. Check connection reads account identity only; it does not publish. Provider API usage limits or charges may apply.</p><p>Use an Instagram Login token, a Facebook Page token, a Threads token, and an X OAuth 2.0 user token respectively. Enable live posting separately with PUBLISH_ENABLED. Token expiry and renewal remain your responsibility.</p>
     <div className="social-guide-platforms"><button className="secondary small" onClick={() => setGuideOpen(true)} aria-haspopup="dialog">How to set up social accounts</button><button className="text-button" onClick={() => void query.refetch()}>Refresh configuration</button></div>
     {guideOpen && <SocialSetupGuide close={() => setGuideOpen(false)} />}
     {query.isPending && <p role="status">Checking local configuration…</p>}
