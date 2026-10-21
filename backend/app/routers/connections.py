@@ -32,7 +32,10 @@ def connections(request: Request):
 
 @router.post("/{platform}/check")
 async def check(platform: Platform, request: Request):
-    config = request.app.state.config
+    return await verify_identity(platform, request.app.state.config)
+
+
+async def verify_identity(platform: Platform, config):
     if not all(getattr(config, field).strip() for field in FIELDS[platform]):
         raise HTTPException(409, "Add the required settings to local .env and restart the backend.")
     version = config.meta_graph_version
