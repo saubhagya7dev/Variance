@@ -6,7 +6,7 @@ import httpx
 from app.post_models import PostEdit
 
 # Conservative studio limits, not a promise of platform acceptance.
-LIMITS = {"instagram": 2200, "facebook": 2000}
+LIMITS = {"instagram": 2200, "facebook": 2000, "threads": 500, "x": 280}
 
 
 def text_for(row):
@@ -20,7 +20,12 @@ def view(row, art):
     value["context"] = json.loads(row.context_json)
     value["post_text"] = text_for(row)
     errors = []
-    if len(value["post_text"]) > LIMITS[row.platform]:
+    # Conservative upper bound for X's weighted text (including shortened URLs).
+    length = len(value["post_text"])
+    if row.platform == "x":
+        length = sum(1 if ord(c) < 128 else 2 for c in value["post_text"])
+        length += sum(max(0, 23 - len(u)) for u in re.findall(r"https?://\S+", value["post_text"]))
+    if length > LIMITS[row.platform]:
         errors.append(
             f"Post exceeds the {LIMITS[row.platform]} character studio limit, including disclosure and hashtags."
         )
@@ -32,7 +37,7 @@ def view(row, art):
         errors.append("Artwork approval changed. Approve the image, then save a new post version.")
     value["validation"] = {
         "errors": errors,
-        "characters": len(value["post_text"]),
+        "characters": length,
         "limit": LIMITS[row.platform],
         "note": "Conservative studio checks. Preview is approximate; confirm crop, accessibility and platform requirements in the native composer.",
     }
