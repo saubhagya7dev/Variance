@@ -6,6 +6,7 @@ from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 
+from app import delivery_service
 from app.config import ROOT, Settings, settings
 from app.db import make_engine, migrate
 from app.generation import recover, worker
@@ -13,6 +14,7 @@ from app.routers.characters import router as characters_router
 from app.routers.connections import router as connections_router
 from app.routers.creation import router as creation_router
 from app.routers.discovery import router as discovery_router
+from app.routers.operations import router as operations_router
 from app.routers.posts import router as posts_router
 from app.routers.publishing import router as publishing_router
 
@@ -24,16 +26,21 @@ def create_app(config: Settings = settings) -> FastAPI:
     async def lifespan(app: FastAPI):
         migrate(engine)
         recover(engine)
+        delivery_service.recover(engine)
         task = asyncio.create_task(worker(app.state))
+        metrics_task = asyncio.create_task(delivery_service.worker(app.state))
         try:
             yield
         finally:
             task.cancel()
+            metrics_task.cancel()
             with suppress(asyncio.CancelledError):
                 await task
+            with suppress(asyncio.CancelledError):
+                await metrics_task
             engine.dispose()
 
-    app = FastAPI(title="Variance Studio", version="0.2.0", lifespan=lifespan)
+    app = FastAPI(title="Variance Studio", version="0.7.0", lifespan=lifespan)
     app.state.engine = engine
     app.state.config = config
     app.state.discovery_busy = set()
@@ -44,6 +51,7 @@ def create_app(config: Settings = settings) -> FastAPI:
     app.include_router(posts_router)
     app.include_router(publishing_router)
     app.include_router(connections_router)
+    app.include_router(operations_router)
     app.add_middleware(TrustedHostMiddleware, allowed_hosts=["localhost", "127.0.0.1", "[::1]"])
 
     @app.middleware("http")
@@ -72,12 +80,17 @@ def create_app(config: Settings = settings) -> FastAPI:
     def health():
         with engine.connect() as db:
             db.exec_driver_sql("SELECT 1")
-        return {"status": "ok", "version": "0.2.0", "mode": "local", "publishing_enabled": False}
+        return {
+            "status": "ok",
+            "version": "0.7.0",
+            "mode": "local",
+            "publishing_enabled": config.publish_enabled,
+        }
 
     @app.get("/api/capabilities")
     def capabilities():
         return {
-            "phase": 4,
+            "phase": 7,
             "research": {
                 "available": config.research_provider == "wikipedia" or bool(config.gemini_api_key),
                 "configured": config.research_provider == "wikipedia"
@@ -108,8 +121,8 @@ def create_app(config: Settings = settings) -> FastAPI:
                 "provider": "local",
                 "configured": bool(config.gemini_api_key and config.gemini_captions_enabled),
             },
-            "publishing": {"available": False, "phase": 5},
-            "metrics": {"available": False, "phase": 6},
+            "publishing": {"available": config.publish_enabled, "phase": 5},
+            "metrics": {"available": config.metrics_enabled, "phase": 6},
         }
 
     frontend = ROOT / "frontend" / "dist"
