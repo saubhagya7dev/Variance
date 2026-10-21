@@ -8,7 +8,7 @@ const guides = {
       'Switch your Instagram account to a professional account (Business or Creator).',
       'Create a Meta developer app and choose Instagram API setup with Instagram Login. This route does not require linking a Facebook Page.',
       'Add your own professional account in the app’s setup flow. Accept any tester invitation if the app is in development mode.',
-      'Authorize the account and obtain an Instagram user access token using the dashboard setup or the official Instagram Login flow. Include instagram_business_basic for profile access.',
+      'Authorize the account and obtain an Instagram user access token using the dashboard setup or the official Instagram Login flow. Include instagram_business_basic for profile access and instagram_business_content_publish for posting.',
       'Save the token as INSTAGRAM_ACCESS_TOKEN. Set META_GRAPH_VERSION to the supported Graph API version selected for your app. Use an Instagram Login token, not a Facebook token.',
     ],
     config: 'INSTAGRAM_ACCESS_TOKEN=your_instagram_user_token\nMETA_GRAPH_VERSION=your_supported_version',
@@ -20,7 +20,7 @@ const guides = {
     steps: [
       'Create a Facebook Page and make sure your Facebook account has access to manage it.',
       'Create or select a Meta developer app with the Pages use case. Add yourself to the app’s roles for development testing.',
-      'Use Meta’s Graph API Explorer with your app to authorize your user account. Request pages_show_list and the Page read permissions needed for your app, such as pages_read_engagement.',
+      'Use Meta’s Graph API Explorer with your app to authorize your user account. Request pages_show_list and the Page read permissions needed for your app, such as pages_read_engagement, plus pages_manage_posts for publishing.',
       'Retrieve the Pages you manage using GET /me/accounts with fields=id,name,access_token. Select the intended Page and use its returned Page access token, not the original user token.',
       'Save the matching Page ID and Page token below. Set META_GRAPH_VERSION to a supported version for your app. Variance checks that the token identifies this exact Page.',
     ],
@@ -33,7 +33,7 @@ const guides = {
     steps: [
       'Create your Threads profile and register a Meta developer app with the Threads API use case.',
       'Add your Threads account as a tester when using development mode, and accept the invitation from that account.',
-      'Follow the Threads app setup or official authorization flow to authorize your profile with threads_basic access.',
+      'Follow the Threads app setup or official authorization flow to authorize your profile with threads_basic, threads_content_publish, and threads_manage_insights access.',
       'Obtain a Threads user access token. If you exchange it for a longer-lived token, follow Meta’s current token instructions and keep track of its expiry.',
       'Save it as THREADS_ACCESS_TOKEN. Your Instagram or Facebook token cannot replace this token.',
     ],
@@ -46,7 +46,7 @@ const guides = {
     steps: [
       'Create a developer account and app in the X Developer Console. Review API access requirements and costs for your account.',
       'Enable OAuth 2.0 in the app’s user authentication settings. Register the exact callback URL used by your OAuth client.',
-      'Use an OAuth client that supports Authorization Code with PKCE. Configure its Client ID, matching callback URL, and tweet.read and users.read scopes, then authorize your X account.',
+      'Use an OAuth client that supports Authorization Code with PKCE. Configure its Client ID, matching callback URL, and tweet.read, users.read, tweet.write and media.write scopes, then authorize your X account.',
       'Exchange the authorization code through that client to obtain an OAuth 2.0 user access token. Variance does not yet host an OAuth callback; do not use its localhost homepage as one.',
       'Save the access token as X_USER_ACCESS_TOKEN. Do not use the app-only bearer token, API key, client secret or refresh token. Automatic token renewal is not implemented in Variance.',
     ],
@@ -73,7 +73,7 @@ export default function SocialSetupGuide({ close }: { close: () => void }) {
       <h3>Restart and verify</h3>
       <ol><li>Save <code>.env</code> and stop the backend with Ctrl+C.</li><li>From the <code>backend</code> folder, run:<pre><code>uv run uvicorn app.main:app --host 127.0.0.1 --port 8765</code></pre></li><li>Return to Settings → Your social connections. Click <strong>Refresh configuration</strong>, then <strong>Check connection</strong> on the platform card.</li><li>Confirm that the returned account name and ID match the account you intended to connect.</li></ol>
       <details><summary>Connection not working?</summary><ul><li><strong>Setup needed:</strong> check the required entries, filename (.env, not .env.txt), and restart.</li><li><strong>Token rejected:</strong> check expiry, token type, permissions and app roles. Reauthorize if needed.</li><li><strong>Wrong Facebook Page:</strong> use a Page token matching FACEBOOK_PAGE_ID.</li><li><strong>Rate limit or access-plan error:</strong> check the provider dashboard before retrying.</li></ul></details>
-      <p className="discovery-message">This setup verifies account identity only. Live publishing and automatic token refresh are not enabled. Developer dashboard labels may change; use the linked official instructions if a step looks different.</p>
+      <p className="discovery-message">Account checks verify identity. For live posting, set PUBLISH_ENABLED=true, restart, then review the exact destination and approve each post in Publish. Set METRICS_ENABLED=true for scheduled native counts. Instagram and Threads need a publicly hosted copy of the publication JPEG; Facebook and X upload it directly. Automatic token refresh is not implemented. Developer dashboard labels may change; use the linked official instructions if a step looks different.</p>
       <button className="primary" onClick={close}>Got it</button>
     </div>
   </Modal>
