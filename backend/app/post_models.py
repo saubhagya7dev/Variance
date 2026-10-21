@@ -28,13 +28,14 @@ class PostDraft(SQLModel, table=True):
     approved_at: str = ""
     publication_url: str = ""
     published_at: str = ""
+    publication_method: str = "manual"
     created_at: str = Field(default_factory=timestamp)
 
 
 class DraftRequest(BaseModel):
     model_config = ConfigDict(extra="forbid")
     artwork_id: str
-    platform: Literal["instagram", "facebook"] = "instagram"
+    platform: Literal["instagram", "facebook", "threads", "x"] = "instagram"
     tone: Literal["reflective", "playful", "minimal"] = "reflective"
     provider: Literal["local", "gemini"] = "local"
 
