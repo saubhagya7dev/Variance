@@ -3,12 +3,13 @@ import { Check, Database, Image, Link2, LockKeyhole, Radio, Sparkles } from 'luc
 import { api } from '../api'
 import SocialConnections from './SocialConnections'
 import Operations from './Operations'
+import ThemePicker from './ThemePicker'
 
 export default function Settings() {
   const query = useQuery({ queryKey: ['capabilities'], queryFn: api.capabilities })
   return <div className="settings-page"><div className="page-heading"><div><span className="eyebrow">THE TOOLS BEHIND THE WORK</span><h1>Your studio. Your setup.</h1><p>Simple connections, clear capabilities, and no surprises.</p></div><span className="status-chip"><LockKeyhole size={12} /> Personal workspace</span></div>
     {query.isError && <p role="alert" className="error-message">Connection status could not be loaded. <button className="text-button" onClick={() => void query.refetch()}>Retry</button></p>}
-    <Operations /><SocialConnections /><div className="settings-layout"><section className="panel settings-connections"><div className="panel-heading"><div><Link2 size={17} /><h2>Connections</h2></div><span className="tiny-label">CAPABILITIES</span></div>{[
+    <ThemePicker /><Operations /><SocialConnections /><div className="settings-layout"><section className="panel settings-connections"><div className="panel-heading"><div><Link2 size={17} /><h2>Connections</h2></div><span className="tiny-label">CAPABILITIES</span></div>{[
       { key: 'research' as const, title: 'Character research', subtitle: 'Wikipedia or optional Gemini · sourced research', icon: Sparkles, phase: 2 },
       { key: 'references' as const, title: 'Reference discovery', subtitle: 'Image search · sources and visual details', icon: Image, phase: 2 },
       { key: 'generation' as const, title: 'Image generation', subtitle: 'Manual packs + optional paid Gemini image API', icon: Radio, phase: 3 },
