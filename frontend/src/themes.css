@@ -1,0 +1,83 @@
+/* RGB role values override the original brown fallbacks across every workspace.
+   Status colors and artwork retain their meaning and original colors. */
+:root[data-theme='purple'] {
+  --theme-floor: 7 5 13;
+  --theme-base: 13 9 22;
+  --theme-surface: 23 16 36;
+  --theme-surface-raised: 32 23 47;
+  --theme-border: 58 43 78;
+  --theme-border-strong: 91 68 119;
+  --theme-dim: 148 131 169;
+  --theme-muted: 174 159 193;
+  --theme-text: 214 202 231;
+  --theme-ink: 245 238 255;
+  --theme-accent: 202 172 247;
+  --theme-accent-strong: 167 123 224;
+  --theme-glow: 112 43 174;
+  --accent: #c7a2f3;
+  --accent-bright: #e2caff;
+}
+:root[data-theme='charcoal'] {
+  --theme-floor: 10 12 14;
+  --theme-base: 16 18 20;
+  --theme-surface: 25 28 31;
+  --theme-surface-raised: 33 37 41;
+  --theme-border: 51 57 63;
+  --theme-border-strong: 77 85 94;
+  --theme-dim: 139 149 160;
+  --theme-muted: 164 174 185;
+  --theme-text: 207 215 224;
+  --theme-ink: 241 245 249;
+  --theme-accent: 209 220 231;
+  --theme-accent-strong: 160 179 196;
+  --theme-glow: 92 109 125;
+  --accent: #bdcbd7;
+  --accent-bright: #e1e8ef;
+}
+
+@layer layout {
+  :root[data-theme='purple'] .main-shell {
+    background: radial-gradient(ellipse at 100% 48%, #68045b52, transparent 60%), radial-gradient(ellipse at 55% 100%, #4b087650, transparent 65%), radial-gradient(ellipse at 35% 2%, #270b5638, transparent 48%), #090611;
+  }
+  :root[data-theme='charcoal'] .main-shell {
+    background: radial-gradient(ellipse at 5% 0%, #45525f24, transparent 52%), radial-gradient(ellipse at 95% 100%, #73808b12, transparent 60%), #101214;
+  }
+  :root[data-theme='charcoal'] .main-shell::before { opacity: .025; }
+}
+
+.appearance-panel { padding: 26px; }
+.appearance-heading { display: flex; justify-content: space-between; gap: 20px; align-items: start; }
+.appearance-heading h2 { font-size: 23px; margin: 12px 0 8px; }
+.appearance-heading p { margin-bottom: 0; font-size: 12px; }
+.theme-options { border: 0; padding: 0; margin: 25px 0 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.theme-option { position: relative; display: block; min-width: 0; margin: 0; padding: 5px; cursor: pointer; border: 1px solid rgb(var(--theme-border, 83 60 42)); border-radius: 12px; background: rgb(var(--theme-base, 24 18 14)); transition: border-color .16s, box-shadow .16s; }
+.theme-option:hover { border-color: rgb(var(--theme-accent-strong, 185 137 86)); }
+.theme-option.is-selected { border-color: rgb(var(--theme-accent, 230 182 125)); box-shadow: 0 0 0 1px rgb(var(--theme-accent, 230 182 125) / .2); }
+.theme-option:focus-within { outline: 2px solid rgb(var(--theme-accent, 230 182 125)); outline-offset: 4px; }
+.theme-option > input { position: absolute; width: 1px; height: 1px; opacity: 0; margin: 0; padding: 0; }
+.theme-preview { height: 125px; display: flex; padding: 12px; gap: 12px; border-radius: 8px; overflow: hidden; }
+.preview-brown { --preview-light: #f1c68e; --preview-panel: #54321a8c; background: radial-gradient(ellipse at 0 100%, #a96b2f94, transparent 75%), linear-gradient(130deg, #382417, #140f0d 70%); }
+.preview-purple { --preview-light: #d0a9fc; --preview-panel: #351b528c; background: radial-gradient(ellipse at 100% 65%, #80076699, transparent 70%), radial-gradient(ellipse at 35% 90%, #4a0a79b3, transparent 75%), #090611; }
+.preview-charcoal { --preview-light: #c4d0dc; --preview-panel: #3840488c; background: radial-gradient(ellipse at 0 10%, #505c6b55, transparent 70%), linear-gradient(145deg, #1e2227, #101214); }
+.theme-preview-sidebar { width: 22%; display: grid; align-content: start; gap: 10px; padding-top: 7px; border-right: 1px solid #ffffff14; }
+.theme-preview-sidebar i { height: 3px; width: 60%; border-radius: 3px; background: var(--preview-light); opacity: .3; }
+.theme-preview-sidebar i:first-child { width: 35%; height: 9px; opacity: .8; margin-bottom: 12px; }
+.theme-preview-workspace { display: grid; grid-template-rows: 9px 1fr 9px; gap: 12px; flex: 1; padding: 6px 0; }
+.theme-preview-workspace > i { border-radius: 3px; background: #ffffff12; }
+.theme-preview-workspace > i:first-child { width: 70%; }
+.theme-preview-workspace > span { display: flex; gap: 8px; }
+.theme-preview-workspace > span > i { flex: 1; border-radius: 4px; background: var(--preview-panel); border: 1px solid #ffffff0f; }
+.theme-option-copy { display: block; padding: 13px 10px 10px; }
+.theme-option-copy > span { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 6px; }
+.theme-option-copy strong { color: rgb(var(--theme-ink, 244 230 214)); font-size: 12px; font-weight: 550; }
+.theme-option-copy small { display: block; color: rgb(var(--theme-muted, 181 161 140)); font-size: 11px; line-height: 1.6; }
+.theme-selected { display: grid; place-items: center; width: 19px; height: 19px; border-radius: 50%; color: rgb(var(--theme-base, 25 17 10)); background: rgb(var(--theme-accent, 230 182 125)); }
+.theme-option:not(.is-selected) .theme-selected { background: transparent; border: 1px solid rgb(var(--theme-border-strong, 105 78 53)); }
+.appearance-status { margin: 18px 0 0; font-size: 11px; color: rgb(var(--theme-muted, 181 161 140)); }
+@media(max-width: 720px) {
+  .theme-options { grid-template-columns: 1fr; gap: 12px; }
+  .theme-option { display: grid; grid-template-columns: 110px minmax(0, 1fr); align-items: center; }
+  .theme-preview { height: 100px; gap: 7px; padding: 10px; }
+  .appearance-panel { padding: 20px; }
+  .appearance-heading { flex-direction: column; gap: 12px; }
+}
