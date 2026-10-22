@@ -2,7 +2,7 @@
 
 **A local creative studio for character research, visual exploration, and thoughtful publishing preparation.**
 
-Variance brings a character-first workflow into one warm, dark workspace: research an identity, curate references, develop a visual direction, review artwork, and prepare approved social posts. You control each creative decision and publication step.
+Variance brings a character-first workflow into one customizable dark workspace: research an identity, curate references, develop a visual direction, review artwork, and prepare approved social posts. You control each creative decision and publication step.
 
 > **Current release:** Phases 1–7 implemented locally: creative workflow, gated connected publishing, scheduled native measurements and portable backups. Live social accounts still require your credentials and verification.
 >
@@ -56,6 +56,12 @@ npm.cmd run dev
 Visit **http://127.0.0.1:5173/**. Vite proxies `/api` to the backend.
 
 ## Creative workflow
+
+### Studio appearance
+
+Open **Studio settings → Studio appearance** to choose **Warm Brown**, **Deep Purple**, or **Dark Charcoal**. The palette updates immediately across the studio; artwork keeps its original colors. Warm Brown is the default. Your choice is saved in this browser, restored on reload, and synchronized across tabs for the same studio address. If browser storage is unavailable, switching still works for the current visit. Theme preferences are browser-local and are not included in studio database backups.
+
+### Create and publish
 
 1. **Define the character.** Confirm the fictional identity, franchise and version.
 2. **Research and curate.** Inspect source evidence; import and select matching references.
